@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import type { ContentSection, FooterData, TeamMember, Product, UserProfile, IconLink, ContactLocation, FloatingBubbleConfig, Category, AboutSection, CustomerMessage, CartItem, MediaItem, AdminEntry, OrderStatus, Article, ArticleContent } from './../../../declarations/backend/backend.did';
-import { createMockAboutSection, createMockArticle, createMockArticleList } from '../utils/mockData'; // Import mock data
+import { createMockAboutSection, createMockArticle, createMockArticleList, createMockUserProfile, createMockContentSection, createMockFooterData, createMockTeamMembers, createMockProductList, createMockIconLinks, createMockMediaItems, createMockContactLocations, createMockFloatingBubbleConfig, createMockCategories, createMockCustomerMessages, createMockAdminEntries, createMockOrders, createMockProductPriceVisibility } from '../utils/mockData'; // Import mock data
 
 const isMockMode = () => process.env.DFX_NETWORK !== "ic";
 
@@ -12,19 +12,23 @@ export function useGetCallerUserProfile() {
   const query = useQuery<UserProfile | null>({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockUserProfile();
+      }
       if (!actor) throw new Error('Actor not available');
       const res = await actor.getCallerUserProfile();
       // Actor returns [] | [UserProfile] per candid; unwrap to null or UserProfile
       return (res && (res as any).length) ? (res as any)[0] as UserProfile : null;
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !actorFetching || isMockMode(),
     retry: false,
   });
 
   return {
     ...query,
     isLoading: actorFetching || query.isLoading,
-    isFetched: !!actor && query.isFetched,
+    isFetched: (!!actor && query.isFetched) || isMockMode(),
   };
 }
 
@@ -51,10 +55,14 @@ export function useGetHeroSection() {
   return useQuery<ContentSection>({
     queryKey: ['heroSection'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockContentSection("Torch Bearer Biodynamic wine of Tasmania", "A touch of Tasmania & the spirit of ngurra. Crafting a finer vision of flavours - a quest for extreme wines.", "/assets/hero-mock.jpg");
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getHeroSection();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
@@ -85,10 +93,14 @@ export function useGetFooterData() {
   return useQuery<FooterData>({
     queryKey: ['footerData'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockFooterData();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getFooterData();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -99,10 +111,14 @@ export function useGetTeamMembers() {
   return useQuery<TeamMember[]>({
     queryKey: ['teamMembers'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockTeamMembers();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getTeamMembers();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -127,10 +143,14 @@ export function useGetProducts() {
   return useQuery<[bigint, Product][]>({
     queryKey: ['products'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockProductList();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getProducts();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2, // 2 minutes for products
   });
 }
@@ -141,10 +161,14 @@ export function useGetHeader() {
   return useQuery<ContentSection>({
     queryKey: ['header'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockContentSection("Torch Bearer Wines", "The finest wines at the most accessible prices.", "/assets/header-mock.jpg");
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getHeader();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -155,10 +179,14 @@ export function useGetIconLinks() {
   return useQuery<IconLink[]>({
     queryKey: ['iconLinks'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockIconLinks();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getIconLinks();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -170,10 +198,19 @@ export function useGetMediaItems(page: number) {
   return useQuery<MediaItem[]>({
     queryKey: ['mediaItems', page],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Simulate pagination for mock data
+        const allItems = createMockMediaItems(12); // Assume 12 mock items
+        const pageSize = 6; // Assume 6 items per page
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return allItems.slice(startIndex, endIndex);
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getMediaItems(BigInt(page));
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -184,10 +221,14 @@ export function useGetTotalMediaCount() {
   return useQuery<bigint>({
     queryKey: ['mediaItems', 'count'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return BigInt(12); // Total 12 mock media items
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getTotalMediaCount();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -199,10 +240,14 @@ export function useGetContacts() {
   return useQuery<ContactLocation[]>({
     queryKey: ['contacts'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockContactLocations();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getContacts();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -213,11 +258,15 @@ export function useGetHeadOfficeContact() {
   return useQuery<ContactLocation | null>({
     queryKey: ['headOfficeContact'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockContactLocations(1)[0]; // Return the first contact as head office
+      }
       if (!actor) throw new Error('Actor not available');
       const res = await actor.getHeadOfficeContact();
       return (res && (res as any).length) ? (res as any)[0] as ContactLocation : null;
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -229,10 +278,14 @@ export function useGetFloatingBubbleConfig() {
   return useQuery<FloatingBubbleConfig>({
     queryKey: ['floatingBubbleConfig'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockFloatingBubbleConfig();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getFloatingBubbleConfig();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -244,12 +297,16 @@ export function useGetCategories() {
   return useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockCategories();
+      }
       if (!actor) throw new Error('Actor not available');
       const results = await actor.getCategories();
       // Backend returns [nat, Category][] format, extract just the Category objects
       return results.map(([_, category]) => category);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -272,10 +329,14 @@ export function useGetCustomerMessages() {
   return useQuery<[bigint, CustomerMessage][]>({
     queryKey: ['customerMessages'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockCustomerMessages();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getAllCustomerMessages();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 }
@@ -286,10 +347,18 @@ export function useGetCustomerMessagesPaginated(page: number) {
   return useQuery<CustomerMessage[]>({
     queryKey: ['customerMessages', 'paginated', page],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const allMessages = createMockCustomerMessages(10).map(([_, msg]) => msg); // Assume 10 mock messages
+        const pageSize = 5; // Assume 5 messages per page
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return allMessages.slice(startIndex, endIndex);
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getCustomerMessages(BigInt(page));
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2,
   });
 }
@@ -300,10 +369,14 @@ export function useGetTotalMessageCount() {
   return useQuery<bigint>({
     queryKey: ['customerMessages', 'count'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return BigInt(10); // Total 10 mock messages
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getTotalMessageCount();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2,
   });
 }
@@ -312,13 +385,22 @@ export function useGetTotalMessageCount() {
 export function useGetOrders(page: number) {
   const { actor, isFetching } = useActor();
 
-  return useQuery({
+  return useQuery<[bigint, Order][]>({
     queryKey: ['orders', 'paginated', page],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Simulate pagination for mock data
+        const allOrders = createMockOrders(10); // Assume 10 mock orders
+        const pageSize = 5; // Assume 5 orders per page
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return allOrders.slice(startIndex, endIndex);
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getOrders(BigInt(page));
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2,
   });
 }
@@ -329,10 +411,14 @@ export function useGetTotalOrderCount() {
   return useQuery<bigint>({
     queryKey: ['orders', 'count'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return BigInt(10); // Total 10 mock orders
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getTotalOrderCount();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2,
   });
 }
@@ -344,10 +430,14 @@ export function useGetAdmins() {
   return useQuery<AdminEntry[]>({
     queryKey: ['admins'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockAdminEntries();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getAdmins();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -359,10 +449,14 @@ export function useGetProductPriceVisibility() {
   return useQuery<boolean>({
     queryKey: ['productPriceVisibility'],
     queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockProductPriceVisibility();
+      }
       if (!actor) throw new Error('Actor not available');
       return actor.getProductPriceVisibility();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
   });
 }
