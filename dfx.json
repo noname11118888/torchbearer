@@ -1,0 +1,52 @@
+{
+  "canisters": {
+    "assets": {
+      "type": "custom",
+      "candid": "src/backend/assets/wasm/assetstorage.did",
+      "wasm": "src/backend/assets/wasm/assetstorage.wasm.gz"
+    },
+    "backend": {
+      "main": "src/backend/main.mo",
+      "type": "motoko"
+    },
+    "frontend": {
+      "dependencies": [
+        "backend"
+      ],
+      "source": [
+        "src/frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "frontend"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "type": "custom",
+      "init_arg": "(opt record { new_flow_origins = opt vec { \"http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943\" } })",
+      "specified_id": "rdmx6-jaaaa-aaaaa-aaadq-cai",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops sources"
+    }
+  },
+  "output_env_file": "./src/frontend/.env",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:4943",
+      "type": "ephemeral"
+    },
+    "ic": {
+      "providers": ["https://icp-api.io"]
+    }
+  },
+  "version": 1
+}
