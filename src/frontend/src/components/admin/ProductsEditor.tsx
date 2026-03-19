@@ -10,7 +10,22 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useGetProducts, useAddProduct, useUpdateProduct, useDeleteProduct, useGetCategories } from '../../hooks/useQueries';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Product, Category } from '@/backend';
+import type { Product, Category, PairingFood, TastingNote } from '@/backend';
+
+// Static mock data for pairings and tasting notes, derived from OrderPage.tsx
+const staticPairings: PairingFood[] = [
+  { name: 'Thịt đỏ', icon: '🥩', nameEn: 'Red Meat' },
+  { name: 'Phô mai', icon: '🧀', nameEn: 'Cheese' },
+  { name: 'Hải sản', icon: '🦞', nameEn: 'Seafood' },
+  { name: 'Nấm', icon: '🍄', nameEn: 'Mushrooms' }
+];
+
+const staticTastingNotes: TastingNote[] = [
+  { name: 'Cherry', icon: '🍒', nameVi: 'Anh đào' },
+  { name: 'Oak', icon: '🌳', nameVi: 'Gỗ sồi' },
+  { name: 'Pepper', icon: '🌶️', nameVi: 'Tiêu' },
+  { name: 'Vanilla', icon: '🌼', nameVi: 'Vani' }
+];
 
 export default function ProductsEditor() {
   const { data: productsData, isLoading } = useGetProducts();
@@ -29,10 +44,34 @@ export default function ProductsEditor() {
     imageUrl: '',
     price: 0n,
     categories: [],
-    id: 0n,
-    paring: [],
-    tasting: [],
+    id: 0n, // Backend will likely assign this
+    paring: [], // Initializing with empty array
+    tasting: [], // Initializing with empty array
   });
+
+  const handleParingToggle = (pairing: PairingFood) => {
+    setFormData(prev => {
+      const isSelected = prev.paring.some(p => p.name === pairing.name);
+      return {
+        ...prev,
+        paring: isSelected
+          ? prev.paring.filter(p => p.name !== pairing.name)
+          : [...prev.paring, pairing]
+      };
+    });
+  };
+
+  const handleTastingToggle = (tasting: TastingNote) => {
+    setFormData(prev => {
+      const isSelected = prev.tasting.some(t => t.name === tasting.name);
+      return {
+        ...prev,
+        tasting: isSelected
+          ? prev.tasting.filter(t => t.name !== tasting.name)
+          : [...prev.tasting, tasting]
+      };
+    });
+  };
 
   // Extract products from [bigint, Product][] format
   const products = productsData?.map(([_, product]) => product) || [];
@@ -265,6 +304,66 @@ export default function ProductsEditor() {
                     </div>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label>Kết hợp món ăn / Food Pairing</Label>
+                  {staticPairings.length === 0 ? (
+                    <p className="text-sm text-foreground/60">
+                      Chưa có dữ liệu kết hợp món ăn mẫu.
+                    </p>
+                  ) : (
+                    <div className="space-y-2 border rounded-md p-4">
+                      {staticPairings.map((pairing) => {
+                        const isSelected = formData.paring.some(p => p.name === pairing.name);
+                        return (
+                          <div key={pairing.name} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`pairing-${pairing.name}`}
+                              checked={isSelected}
+                              onCheckedChange={() => handleParingToggle(pairing)}
+                            />
+                            <label
+                              htmlFor={`pairing-${pairing.name}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {pairing.icon} {pairing.name} ({pairing.nameEn})
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Hương vị chính / Main Flavors</Label>
+                  {staticTastingNotes.length === 0 ? (
+                    <p className="text-sm text-foreground/60">
+                      Chưa có dữ liệu hương vị chính mẫu.
+                    </p>
+                  ) : (
+                    <div className="space-y-2 border rounded-md p-4">
+                      {staticTastingNotes.map((tasting) => {
+                        const isSelected = formData.tasting.some(t => t.name === tasting.name);
+                        return (
+                          <div key={tasting.name} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`tasting-${tasting.name}`}
+                              checked={isSelected}
+                              onCheckedChange={() => handleTastingToggle(tasting)}
+                            />
+                            <label
+                              htmlFor={`tasting-${tasting.name}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {tasting.icon} {tasting.name} ({tasting.nameVi})
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
                 <div className="flex gap-2">
                   <Button 
                     onClick={handleSave} 
@@ -317,6 +416,26 @@ export default function ProductsEditor() {
                             {product.categories.map((category, idx) => (
                               <Badge key={idx} variant="secondary" className="text-xs">
                                 {category.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        {product.paring && product.paring.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            <span className="text-xs font-semibold text-foreground/70">Kết hợp:</span>
+                            {product.paring.map((pairing, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {pairing.icon} {pairing.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        {product.tasting && product.tasting.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            <span className="text-xs font-semibold text-foreground/70">Hương vị:</span>
+                            {product.tasting.map((tasting, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {tasting.icon} {tasting.name}
                               </Badge>
                             ))}
                           </div>

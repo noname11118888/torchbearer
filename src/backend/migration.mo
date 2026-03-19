@@ -31,17 +31,25 @@ module {
   };
 
   public type OldTastingNote = {
-    id : Nat;
     name : Text;
     imageUrl : Text;
     description : Text;
   };
 
   public type OldPairingFood = {
-    id : Nat;
     name : Text;
     imageUrl : Text;
     description : Text;
+  };
+
+  public type OldFlavorProfile = {
+    name : Text;
+    value : Float;
+  };
+
+  public type OldProductInfo = {
+    name : Text;
+    value : Text;
   };
 
   public type OldProduct = {
@@ -53,6 +61,8 @@ module {
     categories : [OldCategory];
     tasting : [OldTastingNote];
     paring : [OldPairingFood];
+    profile : [OldFlavorProfile];
+    info : [OldProductInfo];
   };
 
   public type OldCartItem = {

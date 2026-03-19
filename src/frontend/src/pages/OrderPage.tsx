@@ -111,35 +111,24 @@ export default function OrderPage() {
 
   // Mock data for demonstration - in production, this would come from backend
   const flavorProfile = {
-    sweetness: 45,
-    tannins: 70,
-    body: 65,
-    acidity: 55,
-    alcohol: 13.5
+    sweetness: Number(product.sweetness || 0),
+    tannins: Number(product.tannins || 0),
+    body: Number(product.body || 0),
+    acidity: Number(product.acidity || 0),
+    alcohol: Number(product.alcohol || 0)
   };
 
   const productInfo = {
-    vintage: '2021',
-    grapeVariety: 'Pinot Noir',
-    region: 'Tasmania, Australia',
-    capacity: '750ml',
-    alcoholContent: '13.5%',
-    servingTemp: '16-18°C'
+    vintage: product.vintage || 'N/A',
+    grapeVariety: product.grapeVariety || 'N/A',
+    region: product.region || 'N/A',
+    capacity: product.capacity || 'N/A',
+    alcoholContent: product.alcoholContent || 'N/A',
+    servingTemp: product.servingTemp || 'N/A'
   };
 
-  const pairings = [
-    { name: 'Thịt đỏ', icon: '🥩', nameEn: 'Red Meat' },
-    { name: 'Phô mai', icon: '🧀', nameEn: 'Cheese' },
-    { name: 'Hải sản', icon: '🦞', nameEn: 'Seafood' },
-    { name: 'Nấm', icon: '🍄', nameEn: 'Mushrooms' }
-  ];
-
-  const mainFlavors = [
-    { name: 'Cherry', icon: '🍒', nameVi: 'Anh đào' },
-    { name: 'Oak', icon: '🌳', nameVi: 'Gỗ sồi' },
-    { name: 'Pepper', icon: '🌶️', nameVi: 'Tiêu' },
-    { name: 'Vanilla', icon: '🌼', nameVi: 'Vani' }
-  ];
+  const pairings = product.foodPairings || [];
+  const mainFlavors = product.tastingNotes || [];
 
   const accessories = [
     { name: 'Túi vải Canvas cao cấp', price: 50000, image: '/assets/image.png' },

@@ -24,17 +24,25 @@ module {
   };
 
   public type TastingNote = {
-    id : Nat;
     name : Text;
     imageUrl : Text;
     description : Text;
   };
 
   public type PairingFood = {
-    id : Nat;
     name : Text;
     imageUrl : Text;
     description : Text;
+  };
+
+  public type FlavorProfile = {
+    name : Text;
+    value : Float;
+  };
+
+  public type ProductInfo = {
+    name : Text;
+    value : Text;
   };
 
   public type Product = {
@@ -46,6 +54,8 @@ module {
     categories : [Category];
     tasting : [TastingNote];
     paring : [PairingFood];
+    profile : [FlavorProfile];
+    info : [ProductInfo];
   };
 
   public type CartItem = {
