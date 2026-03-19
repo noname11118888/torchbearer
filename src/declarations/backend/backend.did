@@ -41,10 +41,12 @@ type ProductInfo =
 type Product = 
  record {
    categories: vec Category;
+   classificationTag: ProductInfo;
    description: text;
    id: nat;
    imageUrl: text;
    info: vec ProductInfo;
+   isHighlighted: bool;
    name: text;
    paring: vec PairingFood;
    price: nat;

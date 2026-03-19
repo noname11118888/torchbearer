@@ -63,6 +63,8 @@ module {
     paring : [OldPairingFood];
     profile : [OldFlavorProfile];
     info : [OldProductInfo];
+    isHighlighted : Bool;
+    classificationTag : OldProductInfo;
   };
 
   public type OldCartItem = {

@@ -56,6 +56,8 @@ module {
     paring : [PairingFood];
     profile : [FlavorProfile];
     info : [ProductInfo];
+    isHighlighted : Bool;
+    classificationTag : ProductInfo;
   };
 
   public type CartItem = {
