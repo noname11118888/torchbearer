@@ -13,6 +13,15 @@ import { toast } from 'sonner';
 import type { Product, Category, PairingFood, TastingNote, FlavorProfile, ProductInfo } from '@/backend';
 import { PairingFoodSelection } from './product-sub-editors/PairingFoodSelection';
 import { TastingNoteSelection } from './product-sub-editors/TastingNoteSelection';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const productInfoSuggestions = [
+  'vintage', 'grapeVariety', 'region', 'capacity', 'alcoholContent', 'servingTemp', 'Other'
+];
+
+const flavorProfileSuggestions = [
+  'sweetness', 'tannins', 'body', 'acidity', 'alcohol', 'Other'
+];
 
 // Static mock data for pairings and tasting notes, derived from OrderPage.tsx
 
@@ -270,15 +279,39 @@ export default function ProductsEditor() {
                     )}
                     {formData.info.map((infoItem, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <Input
-                          placeholder="Tên thông tin (ví dụ: Vintage)"
-                          value={infoItem.name}
-                          onChange={(e) => {
-                            const newInfo = [...formData.info];
-                            newInfo[index] = { ...newInfo[index], name: e.target.value };
-                            setFormData({ ...formData, info: newInfo });
-                          }}
-                        />
+                        <div className="flex-1">
+                          <Select
+                            value={infoItem.name}
+                            onValueChange={(value) => {
+                              const newInfo = [...formData.info];
+                              newInfo[index] = { ...newInfo[index], name: value === 'Other' ? '' : value };
+                              setFormData({ ...formData, info: newInfo });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn thông tin" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {productInfoSuggestions.map(suggestion => (
+                                <SelectItem key={suggestion} value={suggestion}>
+                                  {suggestion}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {infoItem.name === '' && (
+                            <Input
+                              placeholder="Tên thông tin tùy chỉnh"
+                              value={infoItem.name}
+                              onChange={(e) => {
+                                const newInfo = [...formData.info];
+                                newInfo[index] = { ...newInfo[index], name: e.target.value };
+                                setFormData({ ...formData, info: newInfo });
+                              }}
+                              className="mt-2"
+                            />
+                          )}
+                        </div>
                         <Input
                           placeholder="Giá trị (ví dụ: 2021)"
                           value={infoItem.value}
@@ -322,15 +355,39 @@ export default function ProductsEditor() {
                     )}
                     {formData.profile.map((profileItem, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <Input
-                          placeholder="Tên hương vị (ví dụ: sweetness)"
-                          value={profileItem.name}
-                          onChange={(e) => {
-                            const newProfile = [...formData.profile];
-                            newProfile[index] = { ...newProfile[index], name: e.target.value };
-                            setFormData({ ...formData, profile: newProfile });
-                          }}
-                        />
+                        <div className="flex-1">
+                          <Select
+                            value={profileItem.name}
+                            onValueChange={(value) => {
+                              const newProfile = [...formData.profile];
+                              newProfile[index] = { ...newProfile[index], name: value === 'Other' ? '' : value };
+                              setFormData({ ...formData, profile: newProfile });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn hương vị" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {flavorProfileSuggestions.map(suggestion => (
+                                <SelectItem key={suggestion} value={suggestion}>
+                                  {suggestion}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {profileItem.name === '' && (
+                            <Input
+                              placeholder="Tên hương vị tùy chỉnh"
+                              value={profileItem.name}
+                              onChange={(e) => {
+                                const newProfile = [...formData.profile];
+                                newProfile[index] = { ...newProfile[index], name: e.target.value };
+                                setFormData({ ...formData, profile: newProfile });
+                              }}
+                              className="mt-2"
+                            />
+                          )}
+                        </div>
                         <Input
                           type="number"
                           placeholder="Giá trị (0-100)"
