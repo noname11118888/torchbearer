@@ -110,25 +110,36 @@ export default function OrderPage() {
   const totalPrice = Number(product.price) * quantity;
 
   // Mock data for demonstration - in production, this would come from backend
+  const getProductInfoValue = (infoArray: ProductInfo[] | undefined, name: string): string => {
+    return infoArray?.find(item => item.name === name)?.value || 'N/A';
+  };
+
+  const getFlavorProfileValue = (profileArray: FlavorProfile[] | undefined, name: string): number => {
+    return Number(profileArray?.find(item => item.name === name)?.value || 0);
+  };
+
   const flavorProfile = {
-    sweetness: Number(product.sweetness || 0),
-    tannins: Number(product.tannins || 0),
-    body: Number(product.body || 0),
-    acidity: Number(product.acidity || 0),
-    alcohol: Number(product.alcohol || 0)
+    sweetness: getFlavorProfileValue(product.profile, 'sweetness'),
+    tannins: getFlavorProfileValue(product.profile, 'tannins'),
+    body: getFlavorProfileValue(product.profile, 'body'),
+    acidity: getFlavorProfileValue(product.profile, 'acidity'),
+    alcohol: getFlavorProfileValue(product.profile, 'alcohol')
   };
 
   const productInfo = {
-    vintage: product.vintage || 'N/A',
-    grapeVariety: product.grapeVariety || 'N/A',
-    region: product.region || 'N/A',
-    capacity: product.capacity || 'N/A',
-    alcoholContent: product.alcoholContent || 'N/A',
-    servingTemp: product.servingTemp || 'N/A'
+    vintage: getProductInfoValue(product.info, 'vintage'),
+    grapeVariety: getProductInfoValue(product.info, 'grapeVariety'),
+    region: getProductInfoValue(product.info, 'region'),
+    capacity: getProductInfoValue(product.info, 'capacity'),
+    alcoholContent: getProductInfoValue(product.info, 'alcoholContent'),
+    servingTemp: getProductInfoValue(product.info, 'servingTemp')
   };
 
-  const pairings = product.foodPairings || [];
-  const mainFlavors = product.tastingNotes || [];
+  const pairings = product.paring || [];
+  const mainFlavors = product.tasting || [];
+
+  // Helper to resolve image URLs
+  const resolveImageUrl = (url: string) => url.startsWith('http') ? url : `/assets/${url}`;
 
   const accessories = [
     { name: 'Túi vải Canvas cao cấp', price: 50000, image: '/assets/image.png' },
@@ -326,9 +337,9 @@ export default function OrderPage() {
                   {pairings.map((pairing, idx) => (
                     <Card key={idx} className="text-center hover:shadow-md transition-shadow cursor-pointer">
                       <CardContent className="p-4">
-                        <div className="text-4xl mb-2">{pairing.icon}</div>
+                        <img src={resolveImageUrl(pairing.imageUrl)} alt={pairing.name} className="w-12 h-12 object-contain mx-auto mb-2" />
                         <p className="text-sm font-medium">{pairing.name}</p>
-                        <p className="text-xs text-foreground/60">{pairing.nameEn}</p>
+                        <p className="text-xs text-foreground/60">{pairing.description}</p>
                       </CardContent>
                     </Card>
                   ))}
@@ -341,10 +352,10 @@ export default function OrderPage() {
                 <div className="flex flex-wrap gap-3">
                   {mainFlavors.map((flavor, idx) => (
                     <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors">
-                      <span className="text-2xl">{flavor.icon}</span>
+                      <img src={resolveImageUrl(flavor.imageUrl)} alt={flavor.name} className="h-6 w-6 object-contain" />
                       <div className="text-left">
                         <p className="text-sm font-medium">{flavor.name}</p>
-                        <p className="text-xs text-foreground/60">{flavor.nameVi}</p>
+                        <p className="text-xs text-foreground/60">{flavor.description}</p>
                       </div>
                     </div>
                   ))}

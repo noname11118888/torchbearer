@@ -10,22 +10,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useGetProducts, useAddProduct, useUpdateProduct, useDeleteProduct, useGetCategories } from '../../hooks/useQueries';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Product, Category, PairingFood, TastingNote } from '@/backend';
+import type { Product, Category, PairingFood, TastingNote, FlavorProfile, ProductInfo } from '@/backend';
+import { PairingFoodSelection } from './product-sub-editors/PairingFoodSelection';
+import { TastingNoteSelection } from './product-sub-editors/TastingNoteSelection';
 
 // Static mock data for pairings and tasting notes, derived from OrderPage.tsx
-const staticPairings: PairingFood[] = [
-  { name: 'Thịt đỏ', icon: '🥩', nameEn: 'Red Meat' },
-  { name: 'Phô mai', icon: '🧀', nameEn: 'Cheese' },
-  { name: 'Hải sản', icon: '🦞', nameEn: 'Seafood' },
-  { name: 'Nấm', icon: '🍄', nameEn: 'Mushrooms' }
-];
 
-const staticTastingNotes: TastingNote[] = [
-  { name: 'Cherry', icon: '🍒', nameVi: 'Anh đào' },
-  { name: 'Oak', icon: '🌳', nameVi: 'Gỗ sồi' },
-  { name: 'Pepper', icon: '🌶️', nameVi: 'Tiêu' },
-  { name: 'Vanilla', icon: '🌼', nameVi: 'Vani' }
-];
 
 export default function ProductsEditor() {
   const { data: productsData, isLoading } = useGetProducts();
@@ -45,36 +35,17 @@ export default function ProductsEditor() {
     price: 0n,
     categories: [],
     id: 0n, // Backend will likely assign this
-    paring: [], // Initializing with empty array
-    tasting: [], // Initializing with empty array
+    paring: [],
+    tasting: [],
+    profile: [], // Initialize with empty array
+    info: [], // Initialize with empty array
+    isHighlighted: false, // Initialize with false
+    classificationTag: { name: '', value: '' }, // Initialize with default values
   });
-
-  const handleParingToggle = (pairing: PairingFood) => {
-    setFormData(prev => {
-      const isSelected = prev.paring.some(p => p.name === pairing.name);
-      return {
-        ...prev,
-        paring: isSelected
-          ? prev.paring.filter(p => p.name !== pairing.name)
-          : [...prev.paring, pairing]
-      };
-    });
-  };
-
-  const handleTastingToggle = (tasting: TastingNote) => {
-    setFormData(prev => {
-      const isSelected = prev.tasting.some(t => t.name === tasting.name);
-      return {
-        ...prev,
-        tasting: isSelected
-          ? prev.tasting.filter(t => t.name !== tasting.name)
-          : [...prev.tasting, tasting]
-      };
-    });
-  };
 
   // Extract products from [bigint, Product][] format
   const products = productsData?.map(([_, product]) => product) || [];
+
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -94,6 +65,10 @@ export default function ProductsEditor() {
       id: 0n,
       paring: [],
       tasting: [],
+      profile: [], // Initialize with empty array
+      info: [], // Initialize with empty array
+      isHighlighted: false, // Initialize with false
+      classificationTag: { name: '', value: '' }, // Initialize with default values
     });
   };
 
@@ -275,6 +250,122 @@ export default function ProductsEditor() {
                     </div>
                   )}
                 </div>
+
+                {/* Highlight Product Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isHighlighted"
+                    checked={formData.isHighlighted}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isHighlighted: checked as boolean })}
+                  />
+                  <Label htmlFor="isHighlighted">Hiển thị trên trang chủ (Sản phẩm nổi bật)</Label>
+                </div>
+
+                {/* Product Info (Dynamic Fields) */}
+                <div className="space-y-2">
+                  <Label>Thông tin sản phẩm / Product Information</Label>
+                  <div className="space-y-3 border rounded-md p-4">
+                    {formData.info.length === 0 && (
+                      <p className="text-sm text-foreground/60">Chưa có thông tin sản phẩm nào.</p>
+                    )}
+                    {formData.info.map((infoItem, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Input
+                          placeholder="Tên thông tin (ví dụ: Vintage)"
+                          value={infoItem.name}
+                          onChange={(e) => {
+                            const newInfo = [...formData.info];
+                            newInfo[index] = { ...newInfo[index], name: e.target.value };
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        />
+                        <Input
+                          placeholder="Giá trị (ví dụ: 2021)"
+                          value={infoItem.value}
+                          onChange={(e) => {
+                            const newInfo = [...formData.info];
+                            newInfo[index] = { ...newInfo[index], value: e.target.value };
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newInfo = formData.info.filter((_, i) => i !== index);
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFormData({ ...formData, info: [...formData.info, { name: '', value: '' }] });
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm dòng thông tin
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Flavor Profile (Dynamic Fields) */}
+                <div className="space-y-2">
+                  <Label>Hương vị / Flavor Profile</Label>
+                  <div className="space-y-3 border rounded-md p-4">
+                    {formData.profile.length === 0 && (
+                      <p className="text-sm text-foreground/60">Chưa có thông tin hương vị nào.</p>
+                    )}
+                    {formData.profile.map((profileItem, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Input
+                          placeholder="Tên hương vị (ví dụ: sweetness)"
+                          value={profileItem.name}
+                          onChange={(e) => {
+                            const newProfile = [...formData.profile];
+                            newProfile[index] = { ...newProfile[index], name: e.target.value };
+                            setFormData({ ...formData, profile: newProfile });
+                          }}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Giá trị (0-100)"
+                          value={profileItem.value.toString()}
+                          onChange={(e) => {
+                            const newProfile = [...formData.profile];
+                            newProfile[index] = { ...newProfile[index], value: parseFloat(e.target.value || '0') };
+                            setFormData({ ...formData, profile: newProfile });
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newProfile = formData.profile.filter((_, i) => i !== index);
+                            setFormData({ ...formData, profile: newProfile });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFormData({ ...formData, profile: [...formData.profile, { name: '', value: 0 }] });
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm dòng hương vị
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label>Danh mục</Label>
                   {!categories || categories.length === 0 ? (
@@ -305,65 +396,15 @@ export default function ProductsEditor() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Kết hợp món ăn / Food Pairing</Label>
-                  {staticPairings.length === 0 ? (
-                    <p className="text-sm text-foreground/60">
-                      Chưa có dữ liệu kết hợp món ăn mẫu.
-                    </p>
-                  ) : (
-                    <div className="space-y-2 border rounded-md p-4">
-                      {staticPairings.map((pairing) => {
-                        const isSelected = formData.paring.some(p => p.name === pairing.name);
-                        return (
-                          <div key={pairing.name} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`pairing-${pairing.name}`}
-                              checked={isSelected}
-                              onCheckedChange={() => handleParingToggle(pairing)}
-                            />
-                            <label
-                              htmlFor={`pairing-${pairing.name}`}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                            >
-                              {pairing.icon} {pairing.name} ({pairing.nameEn})
-                            </label>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <PairingFoodSelection
+                  selectedPairings={formData.paring}
+                  onSelectionChange={(newPairings) => setFormData({ ...formData, paring: newPairings })}
+                />
 
-                <div className="space-y-2">
-                  <Label>Hương vị chính / Main Flavors</Label>
-                  {staticTastingNotes.length === 0 ? (
-                    <p className="text-sm text-foreground/60">
-                      Chưa có dữ liệu hương vị chính mẫu.
-                    </p>
-                  ) : (
-                    <div className="space-y-2 border rounded-md p-4">
-                      {staticTastingNotes.map((tasting) => {
-                        const isSelected = formData.tasting.some(t => t.name === tasting.name);
-                        return (
-                          <div key={tasting.name} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`tasting-${tasting.name}`}
-                              checked={isSelected}
-                              onCheckedChange={() => handleTastingToggle(tasting)}
-                            />
-                            <label
-                              htmlFor={`tasting-${tasting.name}`}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                            >
-                              {tasting.icon} {tasting.name} ({tasting.nameVi})
-                            </label>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <TastingNoteSelection
+                  selectedTastingNotes={formData.tasting}
+                  onSelectionChange={(newTastingNotes) => setFormData({ ...formData, tasting: newTastingNotes })}
+                />
                 <div className="flex gap-2">
                   <Button 
                     onClick={handleSave} 
