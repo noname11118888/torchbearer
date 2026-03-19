@@ -15,6 +15,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useCart } from '../contexts/CartContext';
 import { useGetProducts, useSubmitOrder, useGetProductPriceVisibility } from '../hooks/useQueries';
+import * as LucideIcons from 'lucide-react';
 import { ArrowLeft, Plus, Minus, ShoppingCart, Phone, MessageCircle, Mail, Wine, Grape, Thermometer, MapPin, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -140,6 +141,23 @@ export default function OrderPage() {
 
   // Helper to resolve image URLs
   const resolveImageUrl = (url: string) => url.startsWith('http') ? url : `/assets/${url}`;
+
+  // Helper to render icon or image
+  const renderIconOrImage = (iconSource: string, altText: string, className: string = '') => {
+    const isImageUrl = iconSource.startsWith('http') || iconSource.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i);
+    if (isImageUrl) {
+      return <img src={resolveImageUrl(iconSource)} alt={altText} className={className} />;
+    } else {
+      // Assume it's a Lucide icon name if not an image URL
+      const IconComponent = LucideIcons[iconSource as keyof typeof LucideIcons];
+      if (IconComponent) {
+        return <IconComponent className={className} aria-label={altText} />;
+      } else {
+        // Fallback for actual text or unrecognised icon names
+        return <span className={className}>{iconSource}</span>;
+      }
+    }
+  };
 
   const accessories = [
     { name: 'Túi vải Canvas cao cấp', price: 50000, image: '/assets/image.png' },
@@ -333,33 +351,87 @@ export default function OrderPage() {
               {/* Wine Pairing Section */}
               <div>
                 <h3 className="text-xl font-semibold mb-4">Kết hợp món ăn / Food Pairing</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {pairings.map((pairing, idx) => (
-                    <Card key={idx} className="text-center hover:shadow-md transition-shadow cursor-pointer">
-                      <CardContent className="p-4">
-                        <img src={resolveImageUrl(pairing.imageUrl)} alt={pairing.name} className="w-12 h-12 object-contain mx-auto mb-2" />
-                        <p className="text-sm font-medium">{pairing.name}</p>
-                        <p className="text-xs text-foreground/60">{pairing.description}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                {pairings.length > 6 ? (
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: false, // Consider if loop is desired for pairings
+                    }}
+                    className="w-full"
+                  >
+                    <CarouselContent className="-ml-4">
+                      {pairings.map((pairing, idx) => (
+                        <CarouselItem key={idx} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                          <Card className="text-center hover:shadow-md transition-shadow cursor-pointer h-full">
+                            <CardContent className="p-4 flex flex-col justify-between h-full">
+                              {renderIconOrImage(pairing.imageUrl, pairing.name, "w-12 h-12 object-contain mx-auto mb-2")}
+                              <div>
+                                <p className="text-sm font-medium">{pairing.name}</p>
+                                <p className="text-xs text-foreground/60">{pairing.description}</p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {pairings.map((pairing, idx) => (
+                      <Card key={idx} className="text-center hover:shadow-md transition-shadow cursor-pointer">
+                        <CardContent className="p-4">
+                          {renderIconOrImage(pairing.imageUrl, pairing.name, "w-12 h-12 object-contain mx-auto mb-2")}
+                          <p className="text-sm font-medium">{pairing.name}</p>
+                          <p className="text-xs text-foreground/60">{pairing.description}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Main Flavors Section */}
               <div>
                 <h3 className="text-xl font-semibold mb-4">Hương vị chính / Main Flavors</h3>
-                <div className="flex flex-wrap gap-3">
-                  {mainFlavors.map((flavor, idx) => (
-                    <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors">
-                      <img src={resolveImageUrl(flavor.imageUrl)} alt={flavor.name} className="h-6 w-6 object-contain" />
-                      <div className="text-left">
-                        <p className="text-sm font-medium">{flavor.name}</p>
-                        <p className="text-xs text-foreground/60">{flavor.description}</p>
+                {mainFlavors.length > 6 ? (
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: false, // Consider if loop is desired for flavors
+                    }}
+                    className="w-full"
+                  >
+                    <CarouselContent className="-ml-4">
+                      {mainFlavors.map((flavor, idx) => (
+                        <CarouselItem key={idx} className="pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
+                          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors h-full">
+                            {renderIconOrImage(flavor.imageUrl, flavor.name, "h-6 w-6 object-contain flex-shrink-0")}
+                            <div className="text-left flex-grow">
+                              <p className="text-sm font-medium line-clamp-1">{flavor.name}</p>
+                              <p className="text-xs text-foreground/60 line-clamp-1">{flavor.description}</p>
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    {mainFlavors.map((flavor, idx) => (
+                      <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors">
+                        {renderIconOrImage(flavor.imageUrl, flavor.name, "h-6 w-6 object-contain")}
+                        <div className="text-left">
+                          <p className="text-sm font-medium">{flavor.name}</p>
+                          <p className="text-xs text-foreground/60">{flavor.description}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Separator />

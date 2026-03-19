@@ -18,11 +18,65 @@ interface PairingFoodSelectionProps {
 
 // Static data for pairings
 const staticPairings: PairingFood[] = [
-  { name: 'Thịt đỏ', imageUrl: '🥩', description: 'Red Meat' },
-  { name: 'Phô mai', imageUrl: '🧀', description: 'Cheese' },
+  { name: 'Khai vị', imageUrl: '🥗', description: 'Món khai vị' },
+  { name: 'Ăn nhẹ', imageUrl: '🍢', description: 'Snack / tapas' },
+  { name: 'Phô mai xanh', imageUrl: '🧀', description: 'Blue cheese' },
+  { name: 'Đồ nguội', imageUrl: '🥓', description: 'Processed food' },
+  { name: 'Phô mai dê', imageUrl: '🍥', description: 'Goat cheese' },
+  { name: 'Cá nạc', imageUrl: '🐟', description: 'Lean fish' },
+  { name: 'Thịt bò', imageUrl: '🥩', description: 'Beef' },
+  { name: 'Thịt cừu', imageUrl: '🍖', description: 'Lamb' },
+  { name: 'Phô mai cứng', imageUrl: '🧀', description: 'Hard cheese' },
+  { name: 'Phô mai mềm', imageUrl: '🧈', description: 'Soft cheese' },
+  { name: 'Thịt nai', imageUrl: '🦌', description: 'Venison' },
+  { name: 'Thịt heo', imageUrl: '🐖', description: 'Pork' },
+  { name: 'Mỳ ống', imageUrl: '🍝', description: 'Pasta' },
+  { name: 'Thịt gia cầm', imageUrl: '🍗', description: 'Poultry' },
+  { name: 'Tôm', imageUrl: '🍤', description: 'Shrimp' },
+
+  // NEW (mở rộng)
+  { name: 'Cá béo', imageUrl: '🐠', description: 'Fatty fish (salmon, tuna)' },
   { name: 'Hải sản', imageUrl: '🦞', description: 'Seafood' },
+  { name: 'Pizza', imageUrl: '🍕', description: 'Pizza' },
+  { name: 'Burger', imageUrl: '🍔', description: 'Burger' },
+  { name: 'Đồ nướng', imageUrl: '🔥', description: 'Grilled food' },
+  { name: 'Rau xanh', imageUrl: '🥬', description: 'Green vegetables' },
+  { name: 'Salad', imageUrl: '🥙', description: 'Fresh salad' },
+  { name: 'Đồ cay', imageUrl: '🌶️', description: 'Spicy food' },
+  { name: 'Món Á', imageUrl: '🍜', description: 'Asian cuisine' },
+  { name: 'Món Ý', imageUrl: '🍝', description: 'Italian cuisine' },
+  { name: 'Thịt đỏ', imageUrl: '🥩', description: 'Red Meat' }, 
+  { name: 'Phô mai', imageUrl: '🧀', description: 'Cheese' }, 
   { name: 'Nấm', imageUrl: '🍄', description: 'Mushrooms' }
 ];
+
+// const staticPairings: PairingFood[] = [
+//   { name: 'Khai vị', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f957.svg', description: 'Món khai vị' },
+//   { name: 'Ăn nhẹ', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f362.svg', description: 'Snack / tapas' },
+//   { name: 'Phô mai xanh', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f9c0.svg', description: 'Blue cheese' },
+//   { name: 'Đồ nguội', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f953.svg', description: 'Processed food' },
+//   { name: 'Phô mai dê', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f9c0.svg', description: 'Goat cheese' },
+//   { name: 'Cá nạc', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f41f.svg', description: 'Lean fish' },
+//   { name: 'Thịt bò', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f969.svg', description: 'Beef' },
+//   { name: 'Thịt cừu', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f356.svg', description: 'Lamb' },
+//   { name: 'Phô mai cứng', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f9c0.svg', description: 'Hard cheese' },
+//   { name: 'Phô mai mềm', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f9c8.svg', description: 'Soft cheese' },
+//   { name: 'Thịt nai', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f98c.svg', description: 'Venison' },
+//   { name: 'Thịt heo', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f416.svg', description: 'Pork' },
+//   { name: 'Mỳ ống', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f35d.svg', description: 'Pasta' },
+//   { name: 'Thịt gia cầm', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f357.svg', description: 'Poultry' },
+//   { name: 'Tôm', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f364.svg', description: 'Shrimp' },
+//   { name: 'Cá béo', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f420.svg', description: 'Fatty fish' },
+//   { name: 'Hải sản', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f99e.svg', description: 'Seafood' },
+//   { name: 'Pizza', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f355.svg', description: 'Pizza' },
+//   { name: 'Burger', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f354.svg', description: 'Burger' },
+//   { name: 'Đồ nướng', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f525.svg', description: 'Grilled food' },
+//   { name: 'Rau xanh', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f96c.svg', description: 'Green vegetables' },
+//   { name: 'Salad', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f959.svg', description: 'Fresh salad' },
+//   { name: 'Đồ cay', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f336.svg', description: 'Spicy food' },
+//   { name: 'Món Á', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f35c.svg', description: 'Asian cuisine' },
+//   { name: 'Món Ý', imageUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f35d.svg', description: 'Italian cuisine' }
+// ];
 
 export function PairingFoodSelection({ selectedPairings, onSelectionChange }: PairingFoodSelectionProps) {
 
