@@ -14,7 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useCart } from '../contexts/CartContext';
-import { useGetProducts, useSubmitOrder, useGetProductPriceVisibility } from '../hooks/useQueries';
+import { useGetProducts, useSubmitOrder, useGetProductPriceVisibility, useGetCategories, useGetProductsByCategory } from '../hooks/useQueries';
 import * as LucideIcons from 'lucide-react';
 import { ArrowLeft, Plus, Minus, ShoppingCart, Phone, MessageCircle, Mail, Wine, Grape, Thermometer, MapPin, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
@@ -26,6 +26,9 @@ export default function OrderPage() {
   
   const { data: productsData, isLoading } = useGetProducts();
   const { data: showPrices = true } = useGetProductPriceVisibility();
+  const { data: categoriesData } = useGetCategories();
+  const accessoriesCategory = categoriesData?.find(cat => cat.name.toLowerCase() === 'accessories');
+  const { data: accessoriesProductsData } = useGetProductsByCategory(accessoriesCategory?.id || null);
   const { addToCart } = useCart();
   const submitOrder = useSubmitOrder();
   
@@ -159,11 +162,7 @@ export default function OrderPage() {
     }
   };
 
-  const accessories = [
-    { name: 'Túi vải Canvas cao cấp', price: 50000, image: '/assets/image.png' },
-    { name: 'Hộp quà tặng sang trọng', price: 120000, image: '/assets/image.png' },
-    { name: 'Dụng cụ mở rượu chuyên nghiệp', price: 180000, image: '/assets/image.png' }
-  ];
+  const accessories = accessoriesProductsData?.map(([_, p]) => p) || [];
 
   return (
     <>
@@ -571,44 +570,60 @@ export default function OrderPage() {
           </div>
 
           {/* Accessories Section */}
-          <div className="mb-16">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="accessories" className="border rounded-lg px-6">
-                <AccordionTrigger className="text-2xl font-semibold hover:no-underline">
-                  Phụ kiện đi kèm / Wine Accessories
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                    {accessories.map((accessory, idx) => (
-                      <Card key={idx} className="hover:shadow-lg transition-shadow">
-                        <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
-                          <img
-                            src={accessory.image}
-                            alt={accessory.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = '/assets/image.png';
-                            }}
-                          />
-                        </div>
-                        <CardContent className="p-4">
-                          <h4 className="font-semibold mb-2">{accessory.name}</h4>
-                          {showPrices && (
-                            <p className="text-lg font-bold text-primary mb-3">
-                              {accessory.price.toLocaleString('vi-VN')} VNĐ
-                            </p>
-                          )}
-                          <Button variant="outline" size="sm" className="w-full">
-                            Thêm vào giỏ
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
+          {accessories.length > 0 && (
+            <div className="mb-16">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="accessories" className="border rounded-lg px-6">
+                  <AccordionTrigger className="text-2xl font-semibold hover:no-underline">
+                    Phụ kiện đi kèm / Wine Accessories
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                      {accessories.map((accessory, idx) => {
+                        const accessoryImageUrl = accessory.imageUrl.startsWith('http')
+                          ? accessory.imageUrl
+                          : `/assets/${accessory.imageUrl}`;
+                        
+                        return (
+                          <Card key={idx} className="hover:shadow-lg transition-shadow">
+                            <div className="aspect-video overflow-hidden rounded-t-lg bg-muted">
+                              <img
+                                src={accessoryImageUrl}
+                                alt={accessory.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/assets/image.png';
+                                }}
+                              />
+                            </div>
+                            <CardContent className="p-4">
+                              <h4 className="font-semibold mb-2">{accessory.name}</h4>
+                              {showPrices && (
+                                <p className="text-lg font-bold text-primary mb-3">
+                                  {Number(accessory.price).toLocaleString('vi-VN')} VNĐ
+                                </p>
+                              )}
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="w-full"
+                                onClick={() => {
+                                  addToCart(accessory, 1);
+                                  toast.success(`Đã thêm ${accessory.name} vào giỏ hàng`);
+                                }}
+                              >
+                                Thêm vào giỏ
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          )}
 
           {/* Related Products Carousel */}
           {relatedProducts.length > 0 && (

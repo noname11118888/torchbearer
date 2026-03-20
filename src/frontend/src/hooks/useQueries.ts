@@ -311,14 +311,28 @@ export function useGetCategories() {
   });
 }
 
-export function useGetProductsByCategory() {
+export function useGetProductsByCategory(categoryId: bigint | null) {
   const { actor, isFetching } = useActor();
 
-  return useMutation({
-    mutationFn: async (categoryId: string) => {
-      if (!actor) throw new Error('Actor not available');
+  return useQuery<[bigint, Product][]>({
+    queryKey: ['products', 'category', categoryId?.toString()],
+    queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const allProducts = createMockProductList();
+        // Filter mock products by category ID if provided
+        if (categoryId !== null) {
+          return allProducts.filter(([_, p]) => 
+            p.categories.some(cat => cat.id === categoryId)
+          );
+        }
+        return [];
+      }
+      if (!actor || categoryId === null) throw new Error('Actor not available or Category ID is null');
       return actor.getProductsByCategory(categoryId);
     },
+    enabled: (!!actor && !isFetching && categoryId !== null) || (isMockMode() && categoryId !== null),
+    staleTime: 1000 * 60 * 2,
   });
 }
 

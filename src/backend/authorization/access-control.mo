@@ -52,6 +52,11 @@ module {
     };
   };
 
+  type ASSET_ACTOR = actor {
+    authorize: (Principal) -> ();
+    deauthorize: (Principal) -> ();
+  };
+
   public func assignRole(state : AccessControlState, caller : Principal, user : Principal, role : UserRole) {
     if (not superAdmin(caller)) {
       if (not (isAdmin(state, caller))) {
@@ -59,6 +64,16 @@ module {
       };
     };
     Map.add(state.userRoles,Principal.compare, user, role);
+    
+    let assetActor : ASSET_ACTOR = actor("");
+    switch (role) {
+      case (#admin) {
+        assetActor.authorize(user);
+      };
+      case (_) {
+        assetActor.deauthorize(user);
+      }
+    };
   };
 
   public func hasPermission(state : AccessControlState, caller : Principal, requiredRole : UserRole) : Bool {
