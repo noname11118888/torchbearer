@@ -97,6 +97,10 @@ export default function ProductsEditor() {
       id: 0n,
       paring: [],
       tasting: [],
+      profile: [],
+      info: [],
+      isHighlighted: false,
+      classificationTag: { name: '', value: '' },
     });
   };
 
@@ -272,6 +276,47 @@ export default function ProductsEditor() {
                     onCheckedChange={(checked) => setFormData({ ...formData, isHighlighted: checked as boolean })}
                   />
                   <Label htmlFor="isHighlighted">Hiển thị trên trang chủ (Sản phẩm nổi bật)</Label>
+                </div>
+
+                {/* Classification Tag Fields */}
+                <div className="grid grid-cols-2 gap-4 border rounded-md p-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="classificationName">Tên Tag Phân loại (ví dụ: Premium Tasmanian Wine)</Label>
+                    <Input
+                      id="classificationName"
+                      value={formData.classificationTag?.name || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        classificationTag: {
+                          ...(formData.classificationTag || { name: '', value: '' }),
+                          name: e.target.value
+                        }
+                      })}
+                      placeholder="Premium Tasmanian Wine"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="classificationValue">Giá trị (tùy chọn)</Label>
+                    <Select
+                      value={formData.classificationTag?.value || ''}
+                      onValueChange={(val) => setFormData({
+                        ...formData,
+                        classificationTag: {
+                          ...(formData.classificationTag || { name: '', value: '' }),
+                          value: val
+                        }
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn giá trị" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Premium">Premium</SelectItem>
+                        <SelectItem value="Magnum">Magnum</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Product Info (Dynamic Fields) */}

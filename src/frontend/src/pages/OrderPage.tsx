@@ -218,7 +218,7 @@ export default function OrderPage() {
               {/* Product Summary */}
               <div>
                 <h1 className="text-4xl lg:text-5xl font-bold mb-3 text-foreground">{product.name}</h1>
-                <p className="text-lg text-foreground/60 mb-4">Premium Tasmanian Wine</p>
+                <p className="text-lg text-foreground/60 mb-4">{product.classificationTag.name}</p>
                 
                 {/* Classification Tags */}
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -229,9 +229,11 @@ export default function OrderPage() {
                       </Badge>
                     ))
                   )}
-                  <Badge variant="secondary" className="px-3 py-1 text-sm bg-accent/20 text-accent-foreground">Medium</Badge>
-                  <Badge variant="secondary" className="px-3 py-1 text-sm bg-primary/10 text-primary">Premium</Badge>
-                  <Badge variant="secondary" className="px-3 py-1 text-sm bg-secondary/20 text-secondary-foreground">Magnum</Badge>
+                  {product.classificationTag && product.classificationTag.name && (
+                    <Badge variant="secondary" className="px-3 py-1 text-sm bg-accent/20 text-accent-foreground">
+                       {product.classificationTag.value}
+                    </Badge>
+                  )}
                 </div>
 
                 {showPrices && (
@@ -251,188 +253,218 @@ export default function OrderPage() {
               <Separator />
 
               {/* Flavor Profile Visualization */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Wine className="h-5 w-5 text-primary" />
-                  Hương vị / Flavor Profile
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-foreground/70">Độ ngọt / Sweetness</span>
-                      <span className="text-sm font-medium">{flavorProfile.sweetness}%</span>
-                    </div>
-                    <Progress value={flavorProfile.sweetness} className="h-2" />
+              {product.profile && product.profile.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Wine className="h-5 w-5 text-primary" />
+                    Hương vị / Flavor Profile
+                  </h3>
+                  <div className="space-y-4">
+                    {flavorProfile.sweetness > 0 && (
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm text-foreground/70">Độ ngọt / Sweetness</span>
+                          <span className="text-sm font-medium">{flavorProfile.sweetness}%</span>
+                        </div>
+                        <Progress value={flavorProfile.sweetness} className="h-2" />
+                      </div>
+                    )}
+                    {flavorProfile.tannins > 0 && (
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm text-foreground/70">Tannin</span>
+                          <span className="text-sm font-medium">{flavorProfile.tannins}%</span>
+                        </div>
+                        <Progress value={flavorProfile.tannins} className="h-2" />
+                      </div>
+                    )}
+                    {flavorProfile.body > 0 && (
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm text-foreground/70">Độ đậm / Body</span>
+                          <span className="text-sm font-medium">{flavorProfile.body}%</span>
+                        </div>
+                        <Progress value={flavorProfile.body} className="h-2" />
+                      </div>
+                    )}
+                    {flavorProfile.acidity > 0 && (
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm text-foreground/70">Độ chua / Acidity</span>
+                          <span className="text-sm font-medium">{flavorProfile.acidity}%</span>
+                        </div>
+                        <Progress value={flavorProfile.acidity} className="h-2" />
+                      </div>
+                    )}
+                    {flavorProfile.alcohol > 0 && (
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm text-foreground/70">Nồng độ cồn / Alcohol</span>
+                          <span className="text-sm font-medium">{flavorProfile.alcohol}%</span>
+                        </div>
+                        <Progress value={(flavorProfile.alcohol / 15) * 100} className="h-2" />
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-foreground/70">Tannin</span>
-                      <span className="text-sm font-medium">{flavorProfile.tannins}%</span>
-                    </div>
-                    <Progress value={flavorProfile.tannins} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-foreground/70">Độ đậm / Body</span>
-                      <span className="text-sm font-medium">{flavorProfile.body}%</span>
-                    </div>
-                    <Progress value={flavorProfile.body} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-foreground/70">Độ chua / Acidity</span>
-                      <span className="text-sm font-medium">{flavorProfile.acidity}%</span>
-                    </div>
-                    <Progress value={flavorProfile.acidity} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-foreground/70">Nồng độ cồn / Alcohol</span>
-                      <span className="text-sm font-medium">{flavorProfile.alcohol}%</span>
-                    </div>
-                    <Progress value={(flavorProfile.alcohol / 15) * 100} className="h-2" />
-                  </div>
+                  <Separator className="mt-6" />
                 </div>
-              </div>
-
-              <Separator />
+              )}
 
               {/* Product Information Table */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Thông tin sản phẩm / Product Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-start gap-2">
-                    <Calendar className="h-4 w-4 text-primary mt-1" />
-                    <div>
-                      <p className="text-sm text-foreground/60">Vintage</p>
-                      <p className="font-medium">{productInfo.vintage}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Grape className="h-4 w-4 text-primary mt-1" />
-                    <div>
-                      <p className="text-sm text-foreground/60">Grape Variety</p>
-                      <p className="font-medium">{productInfo.grapeVariety}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-primary mt-1" />
-                    <div>
-                      <p className="text-sm text-foreground/60">Region</p>
-                      <p className="font-medium">{productInfo.region}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Wine className="h-4 w-4 text-primary mt-1" />
-                    <div>
-                      <p className="text-sm text-foreground/60">Capacity</p>
-                      <p className="font-medium">{productInfo.capacity}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Wine className="h-4 w-4 text-primary mt-1" />
-                    <div>
-                      <p className="text-sm text-foreground/60">Alcohol Content</p>
-                      <p className="font-medium">{productInfo.alcoholContent}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Thermometer className="h-4 w-4 text-primary mt-1" />
-                    <div>
-                      <p className="text-sm text-foreground/60">Serving Temp</p>
-                      <p className="font-medium">{productInfo.servingTemp}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Wine Pairing Section */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Kết hợp món ăn / Food Pairing</h3>
-                {pairings.length > 6 ? (
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: false, // Consider if loop is desired for pairings
-                    }}
-                    className="w-full"
-                  >
-                    <CarouselContent className="-ml-4">
-                      {pairings.map((pairing, idx) => (
-                        <CarouselItem key={idx} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                          <Card className="text-center hover:shadow-md transition-shadow cursor-pointer h-full">
-                            <CardContent className="p-4 flex flex-col justify-between h-full">
-                              {renderIconOrImage(pairing.imageUrl, pairing.name, "w-12 h-12 object-contain mx-auto mb-2")}
-                              <div>
-                                <p className="text-sm font-medium">{pairing.name}</p>
-                                <p className="text-xs text-foreground/60">{pairing.description}</p>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                  </Carousel>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {pairings.map((pairing, idx) => (
-                      <Card key={idx} className="text-center hover:shadow-md transition-shadow cursor-pointer">
-                        <CardContent className="p-4">
-                          {renderIconOrImage(pairing.imageUrl, pairing.name, "w-12 h-12 object-contain mx-auto mb-2")}
-                          <p className="text-sm font-medium">{pairing.name}</p>
-                          <p className="text-xs text-foreground/60">{pairing.description}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Main Flavors Section */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Hương vị chính / Main Flavors</h3>
-                {mainFlavors.length > 6 ? (
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: false, // Consider if loop is desired for flavors
-                    }}
-                    className="w-full"
-                  >
-                    <CarouselContent className="-ml-4">
-                      {mainFlavors.map((flavor, idx) => (
-                        <CarouselItem key={idx} className="pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
-                          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors h-full">
-                            {renderIconOrImage(flavor.imageUrl, flavor.name, "h-6 w-6 object-contain flex-shrink-0")}
-                            <div className="text-left flex-grow">
-                              <p className="text-sm font-medium line-clamp-1">{flavor.name}</p>
-                              <p className="text-xs text-foreground/60 line-clamp-1">{flavor.description}</p>
-                            </div>
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                  </Carousel>
-                ) : (
-                  <div className="flex flex-wrap gap-3">
-                    {mainFlavors.map((flavor, idx) => (
-                      <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors">
-                        {renderIconOrImage(flavor.imageUrl, flavor.name, "h-6 w-6 object-contain")}
-                        <div className="text-left">
-                          <p className="text-sm font-medium">{flavor.name}</p>
-                          <p className="text-xs text-foreground/60">{flavor.description}</p>
+              {product.info && product.info.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Thông tin sản phẩm / Product Information</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {productInfo.vintage !== 'N/A' && (
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-4 w-4 text-primary mt-1" />
+                        <div>
+                          <p className="text-sm text-foreground/60">Vintage</p>
+                          <p className="font-medium">{productInfo.vintage}</p>
                         </div>
                       </div>
-                    ))}
+                    )}
+                    {productInfo.grapeVariety !== 'N/A' && (
+                      <div className="flex items-start gap-2">
+                        <Grape className="h-4 w-4 text-primary mt-1" />
+                        <div>
+                          <p className="text-sm text-foreground/60">Grape Variety</p>
+                          <p className="font-medium">{productInfo.grapeVariety}</p>
+                        </div>
+                      </div>
+                    )}
+                    {productInfo.region !== 'N/A' && (
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
+                        <div>
+                          <p className="text-sm text-foreground/60">Region</p>
+                          <p className="font-medium">{productInfo.region}</p>
+                        </div>
+                      </div>
+                    )}
+                    {productInfo.capacity !== 'N/A' && (
+                      <div className="flex items-start gap-2">
+                        <Wine className="h-4 w-4 text-primary mt-1" />
+                        <div>
+                          <p className="text-sm text-foreground/60">Capacity</p>
+                          <p className="font-medium">{productInfo.capacity}</p>
+                        </div>
+                      </div>
+                    )}
+                    {productInfo.alcoholContent !== 'N/A' && (
+                      <div className="flex items-start gap-2">
+                        <Wine className="h-4 w-4 text-primary mt-1" />
+                        <div>
+                          <p className="text-sm text-foreground/60">Alcohol Content</p>
+                          <p className="font-medium">{productInfo.alcoholContent}</p>
+                        </div>
+                      </div>
+                    )}
+                    {productInfo.servingTemp !== 'N/A' && (
+                      <div className="flex items-start gap-2">
+                        <Thermometer className="h-4 w-4 text-primary mt-1" />
+                        <div>
+                          <p className="text-sm text-foreground/60">Serving Temp</p>
+                          <p className="font-medium">{productInfo.servingTemp}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                  <Separator className="mt-6" />
+                </div>
+              )}
+
+              {/* Wine Pairing Section */}
+              {pairings.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Kết hợp món ăn / Food Pairing</h3>
+                  {pairings.length > 4 ? (
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: false, // Consider if loop is desired for pairings
+                      }}
+                      className="w-full"
+                    >
+                      <CarouselContent className="-ml-4">
+                        {pairings.map((pairing, idx) => (
+                          <CarouselItem key={idx} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                            <Card className="text-center hover:shadow-md transition-shadow cursor-pointer h-full">
+                              <CardContent className="p-4 flex flex-col justify-between h-full">
+                                {renderIconOrImage(pairing.imageUrl, pairing.name, "w-12 h-12 object-contain mx-auto mb-2")}
+                                <div>
+                                  <p className="text-sm font-medium">{pairing.name}</p>
+                                  <p className="text-xs text-foreground/60">{pairing.description}</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {pairings.map((pairing, idx) => (
+                        <Card key={idx} className="text-center hover:shadow-md transition-shadow cursor-pointer">
+                          <CardContent className="p-4">
+                            {renderIconOrImage(pairing.imageUrl, pairing.name, "w-12 h-12 object-contain mx-auto mb-2")}
+                            <p className="text-sm font-medium">{pairing.name}</p>
+                            <p className="text-xs text-foreground/60">{pairing.description}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                  <Separator className="mt-6" />
+                </div>
+              )}
+
+              {/* Main Flavors Section */}
+              {mainFlavors.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Hương vị chính / Main Flavors</h3>
+                  {mainFlavors.length > 4 ? (
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: false, // Consider if loop is desired for flavors
+                      }}
+                      className="w-full"
+                    >
+                      <CarouselContent className="-ml-4">
+                        {mainFlavors.map((flavor, idx) => (
+                          <CarouselItem key={idx} className="pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors h-full">
+                              {renderIconOrImage(flavor.imageUrl, flavor.name, "h-6 w-6 object-contain flex-shrink-0")}
+                              <div className="text-left flex-grow">
+                                <p className="text-sm font-medium line-clamp-1">{flavor.name}</p>
+                                <p className="text-xs text-foreground/60 line-clamp-1">{flavor.description}</p>
+                              </div>
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      {mainFlavors.map((flavor, idx) => (
+                        <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border hover:border-primary transition-colors">
+                          {renderIconOrImage(flavor.imageUrl, flavor.name, "h-6 w-6 object-contain")}
+                          <div className="text-left">
+                            <p className="text-sm font-medium">{flavor.name}</p>
+                            <p className="text-xs text-foreground/60">{flavor.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Separator className="mt-6" />
+                </div>
+              )}
 
               <Separator />
 
