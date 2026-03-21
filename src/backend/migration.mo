@@ -303,7 +303,7 @@ module {
     aboutSection : OldAboutSection;
 
     articles : Map.Map<Nat, OldArticle>;
-    // userOrders : Map.Map<Principal, OldOrderList>;
+    userOrders : Map.Map<Principal, OldOrderList>;
   };
 
   public func run(old : OldActor) : NewActor {
@@ -344,8 +344,8 @@ module {
         // teamMembers = []; // Assuming empty for migration
       };
 
-      articles = Map.empty<Nat, T.Article>();
-      userOrders = Map.empty<Principal, T.OrderList>();
+      articles = old.articles;
+      userOrders = old.userOrders;
 
     };
   };

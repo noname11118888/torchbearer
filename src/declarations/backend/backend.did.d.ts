@@ -143,7 +143,7 @@ export interface UserProfile {
   'email' : string,
 }
 export interface _SERVICE {
-  'addAdmin' : ActorMethod<[string], undefined>,
+  'addAdmin' : ActorMethod<[Principal], undefined>,
   'addArticleItem' : ActorMethod<[string, Array<ArticleContent>], undefined>,
   'addCategory' : ActorMethod<[string], undefined>,
   'addContact' : ActorMethod<[ContactLocation], undefined>,

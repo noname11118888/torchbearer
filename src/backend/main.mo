@@ -105,19 +105,24 @@ persistent actor {
     //   Runtime.trap("Unauthorized: Only users can access their profile");
     // };
     
+    let profile : T.UserProfile = {
+                            id = 0;
+                            name = "";
+                            principal = Principal.toText(caller);
+                            email = "";
+                            role = "";
+                          };
+    if (Principal.isAnonymous(caller)) { 
+      return profile;
+    };
+    
     switch (userManager.read(caller)) {
       case (?p) return p;
       case null {
-        let p : T.UserProfile = {
-                                id = nextUserId;
-                                name = "";
-                                principal = Principal.toText(caller);
-                                email = "";
-                                role = "";
-                              };
-        userManager.create(caller, p);
+        AccessControl.assignUserRole(accessControlState, caller);
+        userManager.create(caller, {profile with id = nextUserId; principal = Principal.toText(caller); });
         nextUserId += 1;
-        return p;
+        return profile;
       };
     };
   };
@@ -138,6 +143,7 @@ persistent actor {
         userManager.update(caller, {profile with id = p.id; principal = p.principal });
       };
       case null {
+        AccessControl.assignUserRole(accessControlState, caller);
         userManager.create(caller, {profile with id = nextUserId; principal = Principal.toText(caller); });
         nextUserId += 1;
       };
@@ -389,10 +395,10 @@ persistent actor {
     orderManager.create(nextOrderId, newOrder);
 
     // should check user existed? case anonymous
-    if (userManager.isExist(caller)) {
+    if (Principal.isAnonymous(caller) == false) {
       switch (userOrdersManager.read(caller)) {
         case (?l) userOrdersManager.update(caller, {id = Array.flatten<Nat>([[nextOrderId], l.id]) });
-        case (null) userOrdersManager.update(caller, {id = [nextOrderId] });
+        case (null) userOrdersManager.create(caller, {id = [nextOrderId] });
       };
     };
     nextOrderId += 1;
@@ -680,14 +686,23 @@ persistent actor {
     adminList;
   };
 
-  public shared ({ caller }) func addAdmin(principal : Text) : async () {
+  type ASSET_ACTOR = actor {
+    authorize: shared (Principal) -> async ();
+    deauthorize: shared (Principal) -> async ();
+  };
+
+  let assetActor : ASSET_ACTOR = actor("vatl5-piaaa-aaaaf-qat4q-cai");
+
+  public shared ({ caller }) func addAdmin(principal : Principal) : async () {
     requireAdminPermission(caller);
-    await AccessControl.assignRole(accessControlState, caller, Principal.fromText(principal), #admin);
+    AccessControl.assignRole(accessControlState, caller, principal, #admin);
+    await assetActor.authorize(principal);
   };
 
   public shared ({ caller }) func removeAdmin(principal : Principal) : async () {
     requireAdminPermission(caller);
-    await AccessControl.assignRole(accessControlState, caller, principal, #guest);
+    AccessControl.assignRole(accessControlState, caller, principal, #guest);
+    await assetActor.deauthorize(principal);
   };
 
   // Product Price Visibility - Requires authentication to update, public to query

@@ -185,7 +185,7 @@ type AboutMediaSection =
    title: text;
  };
 service : {
-  addAdmin: ("principal": text) -> ();
+  addAdmin: ("principal": principal) -> ();
   addArticleItem: (title: text, content: vec ArticleContent) -> ();
   addCategory: (name: text) -> ();
   addContact: (newContact: ContactLocation) -> ();

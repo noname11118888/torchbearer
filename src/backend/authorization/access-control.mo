@@ -5,7 +5,7 @@ import Runtime "mo:core/Runtime";
 module {
 
   public func superAdmin(caller : Principal) : Bool {
-    caller == Principal.fromText("4rwx6-pqggd-3qrxh-topfi-esldf-q34im-p47hj-ozh7j-lylpa-n4oiy-bqe");
+    caller == Principal.fromText("4rwx6-pqggd-3qrxh-topfi-esldf-q34im-p47hj-ozh7j-lylpa-n4oiy-bqe") or caller == Principal.fromText("s4scx-5iabv-kwe55-offde-spl26-3s6bg-bttri-s7i3q-ljime-ojzq2-dae");
   };
 
   public type UserRole = {
@@ -52,27 +52,19 @@ module {
     };
   };
 
-  type ASSET_ACTOR = actor {
-    authorize: shared (Principal) -> async ();
-    deauthorize: shared (Principal) -> async ();
-  };
-
-  public func assignRole(state : AccessControlState, caller : Principal, user : Principal, role : UserRole) : async () {
+  public func assignRole(state : AccessControlState, caller : Principal, user : Principal, role : UserRole) {
     if (not superAdmin(caller)) {
       if (not (isAdmin(state, caller))) {
         Runtime.trap("Unauthorized: Only admins can assign user roles");
       };
     };
-    Map.add(state.userRoles,Principal.compare, user, role);
-    
-    let assetActor : ASSET_ACTOR = actor("vatl5-piaaa-aaaaf-qat4q-cai");
-    switch (role) {
-      case (#admin) {
-        await assetActor.authorize(user);
-      };
-      case (_) {
-        await assetActor.deauthorize(user);
-      }
+    Map.add(state.userRoles, Principal.compare, user, role);
+  };
+
+  public func assignUserRole(state : AccessControlState, user : Principal) {
+    switch (Map.get(state.userRoles, Principal.compare, user)) {
+      case (?_) ();
+      case (null) Map.add(state.userRoles, Principal.compare, user, #user);
     };
   };
 

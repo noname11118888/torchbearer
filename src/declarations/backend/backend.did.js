@@ -149,7 +149,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const CartItem = IDL.Record({ 'quantity' : IDL.Nat, 'product' : Product });
   return IDL.Service({
-    'addAdmin' : IDL.Func([IDL.Text], [], []),
+    'addAdmin' : IDL.Func([IDL.Principal], [], []),
     'addArticleItem' : IDL.Func([IDL.Text, IDL.Vec(ArticleContent)], [], []),
     'addCategory' : IDL.Func([IDL.Text], [], []),
     'addContact' : IDL.Func([ContactLocation], [], []),

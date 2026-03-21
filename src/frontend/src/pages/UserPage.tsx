@@ -18,7 +18,7 @@ export default function UserPage() {
   const updateProfileMutation = useSaveCallerUserProfile();
   
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: ordersData, isLoading: ordersLoading } = useGetCallerOrders(currentPage);
+  const { data: ordersData, isLoading: ordersLoading } = useGetCallerOrders(currentPage - 1);
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
