@@ -53,11 +53,11 @@ module {
   };
 
   type ASSET_ACTOR = actor {
-    authorize: (Principal) -> ();
-    deauthorize: (Principal) -> ();
+    authorize: shared (Principal) -> async ();
+    deauthorize: shared (Principal) -> async ();
   };
 
-  public func assignRole(state : AccessControlState, caller : Principal, user : Principal, role : UserRole) {
+  public func assignRole(state : AccessControlState, caller : Principal, user : Principal, role : UserRole) : async () {
     if (not superAdmin(caller)) {
       if (not (isAdmin(state, caller))) {
         Runtime.trap("Unauthorized: Only admins can assign user roles");
@@ -65,13 +65,13 @@ module {
     };
     Map.add(state.userRoles,Principal.compare, user, role);
     
-    let assetActor : ASSET_ACTOR = actor("");
+    let assetActor : ASSET_ACTOR = actor("vatl5-piaaa-aaaaf-qat4q-cai");
     switch (role) {
       case (#admin) {
-        assetActor.authorize(user);
+        await assetActor.authorize(user);
       };
       case (_) {
-        assetActor.deauthorize(user);
+        await assetActor.deauthorize(user);
       }
     };
   };

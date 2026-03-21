@@ -82,6 +82,10 @@ module {
     status : OrderStatus;
   };
 
+  public type OrderList = {
+    id : [Nat];
+  };
+
   public type OrderStatus = {
     #pending;
     #completed;

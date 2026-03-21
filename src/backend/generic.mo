@@ -49,6 +49,12 @@ module {
             Array.fromIter(iter);
         };
 
+        public func filterValues(predicate : (K, V) -> Bool) : [V] {
+            let mf = Map.filter<K, V>(map, keyCompare, predicate);
+            let iter = Map.values(mf);
+            Array.fromIter(iter);
+        };
+
         public func isExist(k : K) : Bool {
             Map.containsKey<K, V>(map, keyCompare, k);
         };

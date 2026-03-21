@@ -209,7 +209,8 @@ service : {
                                      }) query;
   getArticleById: (id: nat) -> (opt Article) query;
   getArticlePage: (page: nat) -> (vec Article) query;
-  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerOrders: (page: nat) -> (vec Order) query;
+  getCallerUserProfile: () -> (UserProfile) query;
   getCategories: () -> (vec record {
                               nat;
                               Category;

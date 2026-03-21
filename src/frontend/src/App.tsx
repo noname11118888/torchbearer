@@ -9,6 +9,7 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import CartPage from './pages/CartPage';
 import OrderPage from './pages/OrderPage';
+import UserPage from './pages/UserPage';
 import MediaPage from './pages/MediaPage';
 import ArticleListPage from './pages/ArticleListPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
@@ -97,6 +98,12 @@ const adminRoute = createRoute({
   component: AdminPage,
 });
 
+const userRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/user',
+  component: UserPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   aboutRoute,
@@ -108,6 +115,7 @@ const routeTree = rootRoute.addChildren([
   articleRoute,
   articleDetailRoute,
   adminRoute,
+  userRoute,
 ]);
 
 const router = createRouter({ routeTree });

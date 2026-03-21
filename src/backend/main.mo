@@ -12,6 +12,7 @@ import { ObjectCRUD } "generic";
 import AdminCms "admin-cms";
 import Migration "migration";
 
+
 (with migration = Migration.run)
 persistent actor {
   
@@ -36,7 +37,9 @@ persistent actor {
   let mediaItems = Map.empty<Nat, T.MediaItem>();
   let contentSections = Map.empty<Text, T.ContentSection>();
   let iconLinks = Map.empty<Nat, T.IconLink>();
+
   let articles = Map.empty<Nat, T.Article>();
+  let userOrders = Map.empty<Principal, T.OrderList>();
 
   var floatingBubbleConfig : T.FloatingBubbleConfig = {
     backgroundColor = "#FFA500";
@@ -74,7 +77,9 @@ persistent actor {
   transient let teamMemberManager = ObjectCRUD<Nat, T.TeamMember>(Map.empty<Nat, T.TeamMember>(), Nat.compare);
   transient let contentSectionManager = ObjectCRUD<Text, T.ContentSection>(contentSections, Text.compare);
   transient let iconLinkManager = ObjectCRUD<Nat, T.IconLink>(iconLinks, Nat.compare);
+
   transient let articleManager = ObjectCRUD<Nat, T.Article>(articles, Nat.compare);
+  transient let userOrdersManager = ObjectCRUD<Principal, T.OrderList>(userOrders, Principal.compare);
 
   let HERO_SECTION_KEY : Text = "hero_section";
   let ABOUT_SECTION_KEY : Text = "about_section";
@@ -95,11 +100,26 @@ persistent actor {
   };
 
   // User Profile System - Requires authentication
-  public query ({ caller }) func getCallerUserProfile() : async ?T.UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access their profile");
+  public query ({ caller }) func getCallerUserProfile() : async T.UserProfile {
+    // if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+    //   Runtime.trap("Unauthorized: Only users can access their profile");
+    // };
+    
+    switch (userManager.read(caller)) {
+      case (?p) return p;
+      case null {
+        let p : T.UserProfile = {
+                                id = nextUserId;
+                                name = "";
+                                principal = Principal.toText(caller);
+                                email = "";
+                                role = "";
+                              };
+        userManager.create(caller, p);
+        nextUserId += 1;
+        return p;
+      };
     };
-    userManager.read(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?T.UserProfile {
@@ -113,8 +133,15 @@ persistent actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
-    userManager.create(caller, {profile with id = nextUserId; principal = Principal.toText(caller); });
-    nextUserId += 1;
+    switch (userManager.read(caller)) {
+      case (?p) {
+        userManager.update(caller, {profile with id = p.id; principal = p.principal });
+      };
+      case null {
+        userManager.create(caller, {profile with id = nextUserId; principal = Principal.toText(caller); });
+        nextUserId += 1;
+      };
+    };
   };
 
   // Public Query Endpoints - No authorization required (accessible to guests for public pages)
@@ -316,6 +343,24 @@ persistent actor {
     orderManager.read(id);
   };
 
+  public query ({ caller }) func getCallerOrders(page : Nat) : async [T.Order] {
+    requireUserPermission(caller);
+    switch (userOrdersManager.read(caller)) {
+      case (?l) {
+          let orderList = Array.sliceToArray<Nat>(l.id, page * 10, 10);
+          let orders = orderManager.filterValues(func (k : Nat, v : T.Order) {
+            if (Array.indexOf<Nat>(orderList, k) != null) {
+              true;
+            } else {
+              false;
+            };
+          });
+          return orders;
+      };
+      case (null) [];
+    };
+  };
+
   // Order Submission - No authentication required (guest checkout allowed)
   public shared ({ caller }) func submitOrder(customerName : Text, customerEmail : Text, customerPhone : Text, items : [T.CartItem]) : async () {
     let orderItems = Array.map(items, 
@@ -342,6 +387,14 @@ persistent actor {
       status = #pending;
     };
     orderManager.create(nextOrderId, newOrder);
+
+    // should check user existed? case anonymous
+    if (userManager.isExist(caller)) {
+      switch (userOrdersManager.read(caller)) {
+        case (?l) userOrdersManager.update(caller, {id = Array.flatten<Nat>([[nextOrderId], l.id]) });
+        case (null) userOrdersManager.update(caller, {id = [nextOrderId] });
+      };
+    };
     nextOrderId += 1;
   };
 
@@ -629,12 +682,12 @@ persistent actor {
 
   public shared ({ caller }) func addAdmin(principal : Text) : async () {
     requireAdminPermission(caller);
-    AccessControl.assignRole(accessControlState, caller, Principal.fromText(principal), #admin);
+    await AccessControl.assignRole(accessControlState, caller, Principal.fromText(principal), #admin);
   };
 
   public shared ({ caller }) func removeAdmin(principal : Principal) : async () {
     requireAdminPermission(caller);
-    AccessControl.assignRole(accessControlState, caller, principal, #guest);
+    await AccessControl.assignRole(accessControlState, caller, principal, #guest);
   };
 
   // Product Price Visibility - Requires authentication to update, public to query

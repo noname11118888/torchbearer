@@ -18,8 +18,7 @@ export function useGetCallerUserProfile() {
       }
       if (!actor) throw new Error('Actor not available');
       const res = await actor.getCallerUserProfile();
-      // Actor returns [] | [UserProfile] per candid; unwrap to null or UserProfile
-      return (res && (res as any).length) ? (res as any)[0] as UserProfile : null;
+      return res as UserProfile;
     },
     enabled: !!actor && !actorFetching || isMockMode(),
     retry: false,
@@ -431,6 +430,25 @@ export function useGetTotalOrderCount() {
       }
       if (!actor) throw new Error('Actor not available');
       return actor.getTotalOrderCount();
+    },
+    enabled: !!actor && !isFetching || isMockMode(),
+    staleTime: 1000 * 60 * 2,
+  });
+}
+
+// User Personal Order Queries
+export function useGetCallerOrders(page: number) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Order[]>({
+    queryKey: ['callerOrders', 'paginated', page],
+    queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockOrders(10).map(([_, o]) => o);
+      }
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCallerOrders(BigInt(page));
     },
     enabled: !!actor && !isFetching || isMockMode(),
     staleTime: 1000 * 60 * 2,
