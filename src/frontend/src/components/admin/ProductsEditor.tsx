@@ -10,7 +10,25 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useGetProducts, useAddProduct, useUpdateProduct, useDeleteProduct, useGetCategories } from '../../hooks/useQueries';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Product, Category } from '@/backend';
+import type { Product, Category, PairingFood, TastingNote, FlavorProfile, ProductInfo } from '@/backend';
+import { PairingFoodSelection } from './product-sub-editors/PairingFoodSelection';
+import { TastingNoteSelection } from './product-sub-editors/TastingNoteSelection';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const productInfoSuggestions = [
+  'vintage', 'grapeVariety', 'region', 'capacity', 'alcoholContent', 'servingTemp', 'Other'
+];
+
+const MAX_PRODUCT_INFOS = 6;
+
+const flavorProfileSuggestions = [
+  'sweetness', 'tannins', 'body', 'acidity', 'alcohol', 'Other'
+];
+
+const MAX_FLAVOR_PROFILES = 5;
+
+// Static mock data for pairings and tasting notes, derived from OrderPage.tsx
+
 
 export default function ProductsEditor() {
   const { data: productsData, isLoading } = useGetProducts();
@@ -29,13 +47,18 @@ export default function ProductsEditor() {
     imageUrl: '',
     price: 0n,
     categories: [],
-    id: 0n,
+    id: 0n, // Backend will likely assign this
     paring: [],
     tasting: [],
+    profile: [], // Initialize with empty array
+    info: [], // Initialize with empty array
+    isHighlighted: false, // Initialize with false
+    classificationTag: { name: '', value: '' }, // Initialize with default values
   });
 
   // Extract products from [bigint, Product][] format
   const products = productsData?.map(([_, product]) => product) || [];
+
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -55,6 +78,10 @@ export default function ProductsEditor() {
       id: 0n,
       paring: [],
       tasting: [],
+      profile: [], // Initialize with empty array
+      info: [], // Initialize with empty array
+      isHighlighted: false, // Initialize with false
+      classificationTag: { name: '', value: '' }, // Initialize with default values
     });
   };
 
@@ -70,6 +97,10 @@ export default function ProductsEditor() {
       id: 0n,
       paring: [],
       tasting: [],
+      profile: [],
+      info: [],
+      isHighlighted: false,
+      classificationTag: { name: '', value: '' },
     });
   };
 
@@ -236,6 +267,301 @@ export default function ProductsEditor() {
                     </div>
                   )}
                 </div>
+
+                {/* Highlight Product Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isHighlighted"
+                    checked={formData.isHighlighted}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isHighlighted: checked as boolean })}
+                  />
+                  <Label htmlFor="isHighlighted">Hiển thị trên trang chủ (Sản phẩm nổi bật)</Label>
+                </div>
+
+                {/* Classification Tag Fields */}
+                <div className="grid grid-cols-2 gap-4 border rounded-md p-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="classificationName">Tên Tag Phân loại (ví dụ: Premium Tasmanian Wine)</Label>
+                    <Input
+                      id="classificationName"
+                      value={formData.classificationTag?.name || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        classificationTag: {
+                          ...(formData.classificationTag || { name: '', value: '' }),
+                          name: e.target.value
+                        }
+                      })}
+                      placeholder="Premium Tasmanian Wine"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="classificationValue">Giá trị (tùy chọn)</Label>
+                    <Select
+                      value={formData.classificationTag?.value || ''}
+                      onValueChange={(val) => setFormData({
+                        ...formData,
+                        classificationTag: {
+                          ...(formData.classificationTag || { name: '', value: '' }),
+                          value: val
+                        }
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn giá trị" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Premium">Premium</SelectItem>
+                        <SelectItem value="Magnum">Magnum</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Product Info (Dynamic Fields) */}
+                <div className="space-y-2">
+                  <Label>Thông tin sản phẩm / Product Information</Label>
+                  <div className="space-y-3 border rounded-md p-4">
+                    {formData.info.length === 0 && (
+                      <p className="text-sm text-foreground/60">Chưa có thông tin sản phẩm nào.</p>
+                    )}
+                    {formData.info.map((infoItem, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="flex-1">
+                          <Select
+                            value={infoItem.name}
+                            onValueChange={(value) => {
+                              const newInfo = [...formData.info];
+                              newInfo[index] = { ...newInfo[index], name: value === 'Other' ? '' : value };
+                              setFormData({ ...formData, info: newInfo });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn thông tin" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {productInfoSuggestions.map(suggestion => (
+                                <SelectItem key={suggestion} value={suggestion}>
+                                  {suggestion}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {infoItem.name === '' && (
+                            <Input
+                              placeholder="Tên thông tin tùy chỉnh"
+                              value={infoItem.name}
+                              onChange={(e) => {
+                                const newInfo = [...formData.info];
+                                newInfo[index] = { ...newInfo[index], name: e.target.value };
+                                setFormData({ ...formData, info: newInfo });
+                              }}
+                              className="mt-2"
+                            />
+                          )}
+                        </div>
+                        <Input
+                          placeholder="Giá trị (ví dụ: 2021)"
+                          value={infoItem.value}
+                          onChange={(e) => {
+                            const newInfo = [...formData.info];
+                            newInfo[index] = { ...newInfo[index], value: e.target.value };
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newInfo = formData.info.filter((_, i) => i !== index);
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Product Info (Dynamic Fields) */}
+                <div className="space-y-2">
+                  <Label>Thông tin sản phẩm / Product Information</Label>
+                  <div className="space-y-3 border rounded-md p-4">
+                    {formData.info.length === 0 && (
+                      <p className="text-sm text-foreground/60">Chưa có thông tin sản phẩm nào.</p>
+                    )}
+                    {formData.info.map((infoItem, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="flex-1">
+                          <Select
+                            value={infoItem.name}
+                            onValueChange={(value) => {
+                              const newInfo = [...formData.info];
+                              if (value !== 'Other' && newInfo.some((item, i) => i !== index && item.name === value)) {
+                                toast.error('Tên thông tin sản phẩm đã tồn tại. Vui lòng chọn tên khác.');
+                                return;
+                              }
+                              newInfo[index] = { ...newInfo[index], name: value === 'Other' ? '' : value };
+                              setFormData({ ...formData, info: newInfo });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn thông tin" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {productInfoSuggestions.map(suggestion => (
+                                <SelectItem key={suggestion} value={suggestion}>
+                                  {suggestion}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {infoItem.name === '' && (
+                            <Input
+                              placeholder="Tên thông tin tùy chỉnh"
+                              value={infoItem.name}
+                              onChange={(e) => {
+                                const newInfo = [...formData.info];
+                                if (e.target.value.trim() !== '' && newInfo.some((item, i) => i !== index && item.name === e.target.value)) {
+                                  toast.error('Tên thông tin sản phẩm đã tồn tại. Vui lòng chọn tên khác.');
+                                  return;
+                                }
+                                newInfo[index] = { ...newInfo[index], name: e.target.value };
+                                setFormData({ ...formData, info: newInfo });
+                              }}
+                              className="mt-2"
+                            />
+                          )}
+                        </div>
+                        <Input
+                          placeholder="Giá trị (ví dụ: 2021)"
+                          value={infoItem.value}
+                          onChange={(e) => {
+                            const newInfo = [...formData.info];
+                            newInfo[index] = { ...newInfo[index], value: e.target.value };
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newInfo = formData.info.filter((_, i) => i !== index);
+                            setFormData({ ...formData, info: newInfo });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (formData.info.length >= MAX_PRODUCT_INFOS) {
+                          toast.error(`Chỉ được phép tối đa ${MAX_PRODUCT_INFOS} thông tin sản phẩm.`);
+                          return;
+                        }
+                        setFormData({ ...formData, info: [...formData.info, { name: '', value: '' }] });
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm dòng thông tin
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Flavor Profile (Dynamic Fields) */}
+                <div className="space-y-2">
+                  <Label>Hương vị / Flavor Profile</Label>
+                  <div className="space-y-3 border rounded-md p-4">
+                    {formData.profile.length === 0 && (
+                      <p className="text-sm text-foreground/60">Chưa có thông tin hương vị nào.</p>
+                    )}
+                    {formData.profile.map((profileItem, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="flex-1">
+                          <Select
+                            value={profileItem.name}
+                            onValueChange={(value) => {
+                              const newProfile = [...formData.profile];
+                              if (value !== 'Other' && newProfile.some((item, i) => i !== index && item.name === value)) {
+                                toast.error('Tên hương vị đã tồn tại. Vui lòng chọn tên khác.');
+                                return;
+                              }
+                              newProfile[index] = { ...newProfile[index], name: value === 'Other' ? '' : value };
+                              setFormData({ ...formData, profile: newProfile });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn hương vị" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {flavorProfileSuggestions.map(suggestion => (
+                                <SelectItem key={suggestion} value={suggestion}>
+                                  {suggestion}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {profileItem.name === '' && (
+                            <Input
+                              placeholder="Tên hương vị tùy chỉnh"
+                              value={profileItem.name}
+                              onChange={(e) => {
+                                const newProfile = [...formData.profile];
+                                if (e.target.value.trim() !== '' && newProfile.some((item, i) => i !== index && item.name === e.target.value)) {
+                                  toast.error('Tên hương vị đã tồn tại. Vui lòng chọn tên khác.');
+                                  return;
+                                }
+                                newProfile[index] = { ...newProfile[index], name: e.target.value };
+                                setFormData({ ...formData, profile: newProfile });
+                              }}
+                              className="mt-2"
+                            />
+                          )}
+                        </div>
+                        <Input
+                          type="number"
+                          placeholder="Giá trị (0-100)"
+                          value={profileItem.value.toString()}
+                          onChange={(e) => {
+                            const newProfile = [...formData.profile];
+                            newProfile[index] = { ...newProfile[index], value: parseFloat(e.target.value || '0') };
+                            setFormData({ ...formData, profile: newProfile });
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newProfile = formData.profile.filter((_, i) => i !== index);
+                            setFormData({ ...formData, profile: newProfile });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (formData.profile.length >= MAX_FLAVOR_PROFILES) {
+                          toast.error(`Chỉ được phép tối đa ${MAX_FLAVOR_PROFILES} hương vị.`);
+                          return;
+                        }
+                        setFormData({ ...formData, profile: [...formData.profile, { name: '', value: 0 }] });
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm dòng hương vị
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label>Danh mục</Label>
                   {!categories || categories.length === 0 ? (
@@ -265,6 +591,16 @@ export default function ProductsEditor() {
                     </div>
                   )}
                 </div>
+
+                <PairingFoodSelection
+                  selectedPairings={formData.paring}
+                  onSelectionChange={(newPairings) => setFormData({ ...formData, paring: newPairings })}
+                />
+
+                <TastingNoteSelection
+                  selectedTastingNotes={formData.tasting}
+                  onSelectionChange={(newTastingNotes) => setFormData({ ...formData, tasting: newTastingNotes })}
+                />
                 <div className="flex gap-2">
                   <Button 
                     onClick={handleSave} 
@@ -317,6 +653,26 @@ export default function ProductsEditor() {
                             {product.categories.map((category, idx) => (
                               <Badge key={idx} variant="secondary" className="text-xs">
                                 {category.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        {product.paring && product.paring.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            <span className="text-xs font-semibold text-foreground/70">Kết hợp:</span>
+                            {product.paring.map((pairing, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {pairing.icon} {pairing.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        {product.tasting && product.tasting.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            <span className="text-xs font-semibold text-foreground/70">Hương vị:</span>
+                            {product.tasting.map((tasting, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {tasting.icon} {tasting.name}
                               </Badge>
                             ))}
                           </div>

@@ -1,6 +1,6 @@
-import type { Principal } from '@dfinity/principal';
-import type { ActorMethod } from '@dfinity/agent';
-import type { IDL } from '@dfinity/candid';
+import type { Principal } from '@icp-sdk/core/principal';
+import type { ActorMethod } from '@icp-sdk/core/agent';
+import type { IDL } from '@icp-sdk/core/candid';
 
 export type Aaguid = Uint8Array | number[];
 export type AccountDelegationError = { 'NoSuchDelegation' : null } |
@@ -31,6 +31,12 @@ export type AddTentativeDeviceResponse = {
      * There is another device already added tentatively
      */
     'another_device_tentatively_added' : null
+  } |
+  {
+    /**
+     * Passkey with this public key is already used
+     */
+    'passkey_with_this_public_key_is_already_used' : null
   } |
   {
     /**
@@ -161,6 +167,12 @@ export type AuthnMethodPurpose = { 'Recovery' : null } |
   { 'Authentication' : null };
 export type AuthnMethodRegisterError = {
     /**
+     * Passkey with this public key is already used
+     */
+    'PasskeyWithThisPublicKeyIsAlreadyUsed' : null
+  } |
+  {
+    /**
      * Authentication method registration mode is off, either due to timeout or because it was never enabled.
      */
     'RegistrationModeOff' : null
@@ -210,12 +222,19 @@ export type AuthnMethodRegistrationModeEnterError = {
   { 'AlreadyInProgress' : null } |
   { 'Unauthorized' : Principal };
 export type AuthnMethodRegistrationModeExitError = {
-    'InternalCanisterError' : string
+    'PasskeyWithThisPublicKeyIsAlreadyUsed' : null
   } |
+  { 'InternalCanisterError' : string } |
   { 'RegistrationModeOff' : null } |
   { 'Unauthorized' : Principal } |
   { 'InvalidMetadata' : string };
 export type AuthnMethodReplaceError = {
+    /**
+     * Passkey with this public key is already used
+     */
+    'PasskeyWithThisPublicKeyIsAlreadyUsed' : null
+  } |
+  {
     /**
      * No authentication method found with the given public key.
      */
@@ -520,7 +539,6 @@ export interface HttpResponse {
   'body' : Uint8Array | number[],
   'headers' : Array<HeaderField>,
   'upgrade' : [] | [boolean],
-  'streaming_strategy' : [] | [StreamingStrategy],
   'status_code' : number,
 }
 /**
@@ -692,6 +710,10 @@ export interface InternetIdentityInit {
    */
   'is_production' : [] | [boolean],
   /**
+   * Backend canister ID, needed for backward compatibility.
+   */
+  'backend_canister_id' : [] | [Principal],
+  /**
    * Configuration to show dapps explorer or not
    */
   'enable_dapps_explorer' : [] | [boolean],
@@ -730,6 +752,10 @@ export interface InternetIdentityInit {
    * Configurations for OpenID clients
    */
   'openid_configs' : [] | [Array<OpenIdConfig>],
+  /**
+   * Backend origin, needed to sync configuration with frontend.
+   */
+  'backend_origin' : [] | [string],
   /**
    * Configuration of the captcha in the registration flow.
    */
@@ -798,6 +824,7 @@ export interface OpenIdConfig {
   'logo' : string,
   'name' : string,
   'fedcm_uri' : [] | [string],
+  'email_verification' : [] | [OpenIdEmailVerification],
   'issuer' : string,
   'auth_scope' : Array<string>,
   'client_id' : string,
@@ -824,6 +851,9 @@ export type OpenIdDelegationError = { 'NoSuchDelegation' : null } |
   { 'NoSuchAnchor' : null } |
   { 'JwtExpired' : null } |
   { 'JwtVerificationFailed' : null };
+export type OpenIdEmailVerification = { 'Google' : null } |
+  { 'Unknown' : null } |
+  { 'Microsoft' : null };
 export interface OpenIdPrepareDelegationResponse {
   'user_key' : UserKey,
   'expiration' : Timestamp,

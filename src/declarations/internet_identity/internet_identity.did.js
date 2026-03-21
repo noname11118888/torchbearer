@@ -15,12 +15,18 @@ export const idlFactory = ({ IDL }) => {
       'api_host' : IDL.Opt(IDL.Text),
     }),
   });
+  const OpenIdEmailVerification = IDL.Variant({
+    'Google' : IDL.Null,
+    'Unknown' : IDL.Null,
+    'Microsoft' : IDL.Null,
+  });
   const OpenIdConfig = IDL.Record({
     'auth_uri' : IDL.Text,
     'jwks_uri' : IDL.Text,
     'logo' : IDL.Text,
     'name' : IDL.Text,
     'fedcm_uri' : IDL.Opt(IDL.Text),
+    'email_verification' : IDL.Opt(OpenIdEmailVerification),
     'issuer' : IDL.Text,
     'auth_scope' : IDL.Vec(IDL.Text),
     'client_id' : IDL.Text,
@@ -47,6 +53,7 @@ export const idlFactory = ({ IDL }) => {
   const InternetIdentityInit = IDL.Record({
     'fetch_root_key' : IDL.Opt(IDL.Bool),
     'is_production' : IDL.Opt(IDL.Bool),
+    'backend_canister_id' : IDL.Opt(IDL.Principal),
     'enable_dapps_explorer' : IDL.Opt(IDL.Bool),
     'assigned_user_number_range' : IDL.Opt(IDL.Tuple(IDL.Nat64, IDL.Nat64)),
     'new_flow_origins' : IDL.Opt(IDL.Vec(IDL.Text)),
@@ -55,6 +62,7 @@ export const idlFactory = ({ IDL }) => {
     'analytics_config' : IDL.Opt(IDL.Opt(AnalyticsConfig)),
     'related_origins' : IDL.Opt(IDL.Vec(IDL.Text)),
     'openid_configs' : IDL.Opt(IDL.Vec(OpenIdConfig)),
+    'backend_origin' : IDL.Opt(IDL.Text),
     'captcha_config' : IDL.Opt(CaptchaConfig),
     'dummy_auth' : IDL.Opt(IDL.Opt(DummyAuthConfig)),
     'register_rate_limit' : IDL.Opt(RateLimitConfig),
@@ -106,6 +114,7 @@ export const idlFactory = ({ IDL }) => {
   const AddTentativeDeviceResponse = IDL.Variant({
     'device_registration_mode_off' : IDL.Null,
     'another_device_tentatively_added' : IDL.Null,
+    'passkey_with_this_public_key_is_already_used' : IDL.Null,
     'added_tentatively' : IDL.Record({
       'verification_code' : IDL.Text,
       'device_registration_timeout' : Timestamp,
@@ -169,6 +178,7 @@ export const idlFactory = ({ IDL }) => {
     'expiration' : Timestamp,
   });
   const AuthnMethodRegisterError = IDL.Variant({
+    'PasskeyWithThisPublicKeyIsAlreadyUsed' : IDL.Null,
     'RegistrationModeOff' : IDL.Null,
     'RegistrationAlreadyInProgress' : IDL.Null,
     'NotSelfAuthenticating' : IDL.Principal,
@@ -182,12 +192,14 @@ export const idlFactory = ({ IDL }) => {
     'Unauthorized' : IDL.Principal,
   });
   const AuthnMethodRegistrationModeExitError = IDL.Variant({
+    'PasskeyWithThisPublicKeyIsAlreadyUsed' : IDL.Null,
     'InternalCanisterError' : IDL.Text,
     'RegistrationModeOff' : IDL.Null,
     'Unauthorized' : IDL.Principal,
     'InvalidMetadata' : IDL.Text,
   });
   const AuthnMethodReplaceError = IDL.Variant({
+    'PasskeyWithThisPublicKeyIsAlreadyUsed' : IDL.Null,
     'AuthnMethodNotFound' : IDL.Null,
     'InvalidMetadata' : IDL.Text,
   });
@@ -370,26 +382,10 @@ export const idlFactory = ({ IDL }) => {
     'headers' : IDL.Vec(HeaderField),
     'certificate_version' : IDL.Opt(IDL.Nat16),
   });
-  const Token = IDL.Record({});
-  const StreamingCallbackHttpResponse = IDL.Record({
-    'token' : IDL.Opt(Token),
-    'body' : IDL.Vec(IDL.Nat8),
-  });
-  const StreamingStrategy = IDL.Variant({
-    'Callback' : IDL.Record({
-      'token' : Token,
-      'callback' : IDL.Func(
-          [Token],
-          [StreamingCallbackHttpResponse],
-          ['query'],
-        ),
-    }),
-  });
   const HttpResponse = IDL.Record({
     'body' : IDL.Vec(IDL.Nat8),
     'headers' : IDL.Vec(HeaderField),
     'upgrade' : IDL.Opt(IDL.Bool),
-    'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
   const IdentityAuthnInfo = IDL.Record({
@@ -913,12 +909,18 @@ export const init = ({ IDL }) => {
       'api_host' : IDL.Opt(IDL.Text),
     }),
   });
+  const OpenIdEmailVerification = IDL.Variant({
+    'Google' : IDL.Null,
+    'Unknown' : IDL.Null,
+    'Microsoft' : IDL.Null,
+  });
   const OpenIdConfig = IDL.Record({
     'auth_uri' : IDL.Text,
     'jwks_uri' : IDL.Text,
     'logo' : IDL.Text,
     'name' : IDL.Text,
     'fedcm_uri' : IDL.Opt(IDL.Text),
+    'email_verification' : IDL.Opt(OpenIdEmailVerification),
     'issuer' : IDL.Text,
     'auth_scope' : IDL.Vec(IDL.Text),
     'client_id' : IDL.Text,
@@ -945,6 +947,7 @@ export const init = ({ IDL }) => {
   const InternetIdentityInit = IDL.Record({
     'fetch_root_key' : IDL.Opt(IDL.Bool),
     'is_production' : IDL.Opt(IDL.Bool),
+    'backend_canister_id' : IDL.Opt(IDL.Principal),
     'enable_dapps_explorer' : IDL.Opt(IDL.Bool),
     'assigned_user_number_range' : IDL.Opt(IDL.Tuple(IDL.Nat64, IDL.Nat64)),
     'new_flow_origins' : IDL.Opt(IDL.Vec(IDL.Text)),
@@ -953,6 +956,7 @@ export const init = ({ IDL }) => {
     'analytics_config' : IDL.Opt(IDL.Opt(AnalyticsConfig)),
     'related_origins' : IDL.Opt(IDL.Vec(IDL.Text)),
     'openid_configs' : IDL.Opt(IDL.Vec(OpenIdConfig)),
+    'backend_origin' : IDL.Opt(IDL.Text),
     'captcha_config' : IDL.Opt(CaptchaConfig),
     'dummy_auth' : IDL.Opt(IDL.Opt(DummyAuthConfig)),
     'register_rate_limit' : IDL.Opt(RateLimitConfig),

@@ -17,7 +17,6 @@ type TeamMember =
 type TastingNote = 
  record {
    description: text;
-   id: nat;
    imageUrl: text;
    name: text;
  };
@@ -34,21 +33,29 @@ type SerializableAdminCMSData =
    products: vec Product;
    teamMembers: vec TeamMember;
  };
+type ProductInfo = 
+ record {
+   name: text;
+   value: text;
+ };
 type Product = 
  record {
    categories: vec Category;
+   classificationTag: ProductInfo;
    description: text;
    id: nat;
    imageUrl: text;
+   info: vec ProductInfo;
+   isHighlighted: bool;
    name: text;
    paring: vec PairingFood;
    price: nat;
+   profile: vec FlavorProfile;
    tasting: vec TastingNote;
  };
 type PairingFood = 
  record {
    description: text;
-   id: nat;
    imageUrl: text;
    name: text;
  };
@@ -107,6 +114,11 @@ type FloatingBubbleConfig =
    hotlineNumberOverride: text;
    icon: text;
    isEnabled: bool;
+ };
+type FlavorProfile = 
+ record {
+   name: text;
+   value: float64;
  };
 type CustomerMessage = 
  record {

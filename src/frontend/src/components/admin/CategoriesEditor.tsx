@@ -30,7 +30,7 @@ export default function CategoriesEditor() {
   // Count products in each category
   const getCategoryProductCount = (categoryId: bigint): number => {
     return products.filter(product => 
-      product.categories.some(c => c.id === categoryId)
+      (product.categories || []).some(c => c.id === categoryId)
     ).length;
   };
 

@@ -1,6 +1,6 @@
-import type { Principal } from '@dfinity/principal';
-import type { ActorMethod } from '@dfinity/agent';
-import type { IDL } from '@dfinity/candid';
+import type { Principal } from '@icp-sdk/core/principal';
+import type { ActorMethod } from '@icp-sdk/core/agent';
+import type { IDL } from '@icp-sdk/core/candid';
 
 export interface AboutMediaSection {
   'title' : string,
@@ -51,6 +51,7 @@ export interface CustomerMessage {
   'timestamp' : bigint,
   'phone' : string,
 }
+export interface FlavorProfile { 'value' : number, 'name' : string }
 export interface FloatingBubbleConfig {
   'backgroundColor' : string,
   'hotlineNumberOverride' : string,
@@ -91,7 +92,6 @@ export type OrderStatus = { 'cancelled' : null } |
   { 'pending' : null } |
   { 'completed' : null };
 export interface PairingFood {
-  'id' : bigint,
   'name' : string,
   'description' : string,
   'imageUrl' : string,
@@ -100,12 +100,17 @@ export interface Product {
   'id' : bigint,
   'categories' : Array<Category>,
   'tasting' : Array<TastingNote>,
+  'info' : Array<ProductInfo>,
   'name' : string,
+  'classificationTag' : ProductInfo,
   'description' : string,
+  'isHighlighted' : boolean,
   'imageUrl' : string,
   'price' : bigint,
   'paring' : Array<PairingFood>,
+  'profile' : Array<FlavorProfile>,
 }
+export interface ProductInfo { 'value' : string, 'name' : string }
 export interface SerializableAdminCMSData {
   'media' : Array<MediaContent>,
   'aboutSection' : ContentSection,
@@ -119,7 +124,6 @@ export interface SerializableAdminCMSData {
   'header' : ContentSection,
 }
 export interface TastingNote {
-  'id' : bigint,
   'name' : string,
   'description' : string,
   'imageUrl' : string,

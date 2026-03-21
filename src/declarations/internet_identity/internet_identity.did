@@ -27,7 +27,6 @@ type HttpResponse = record {
     headers : vec HeaderField;
     body : blob;
     upgrade : opt bool;
-    streaming_strategy : opt StreamingStrategy;
 };
 
 type StreamingCallbackHttpResponse = record {
@@ -137,6 +136,8 @@ type AddTentativeDeviceResponse = variant {
     device_registration_mode_off;
     // There is another device already added tentatively
     another_device_tentatively_added;
+    // Passkey with this public key is already used
+    passkey_with_this_public_key_is_already_used;
 };
 
 type VerifyTentativeDeviceResponse = variant {
@@ -290,6 +291,10 @@ type InternetIdentityInit = record {
     is_production : opt bool;
     // Configuration for dummy authentication used in e2e tests.
     dummy_auth : opt opt DummyAuthConfig;
+    // Backend canister ID, needed for backward compatibility.
+    backend_canister_id : opt principal;
+    // Backend origin, needed to sync configuration with frontend.
+    backend_origin : opt text;
 };
 
 type ChallengeKey = text;
@@ -363,6 +368,12 @@ type Aud = text;
 type JWT = text;
 type Salt = blob;
 
+type OpenIdEmailVerification = variant {
+    Unknown;
+    Google;
+    Microsoft;
+};
+
 type OpenIdConfig = record {
     name : text;
     logo : text;
@@ -372,6 +383,7 @@ type OpenIdConfig = record {
     auth_uri : text;
     auth_scope : vec text;
     fedcm_uri : opt text;
+    email_verification : opt OpenIdEmailVerification;
 };
 
 type OpenIdCredentialKey = record { Iss; Sub };
@@ -530,6 +542,8 @@ type AuthnMethodRegisterError = variant {
     InvalidMetadata : text;
     // The caller's principal is not self-authenticating.
     NotSelfAuthenticating : principal;
+    // Passkey with this public key is already used
+    PasskeyWithThisPublicKeyIsAlreadyUsed;
 };
 
 type AuthnMethodConfirmationError = variant {
@@ -557,6 +571,7 @@ type AuthnMethodRegistrationModeExitError = variant {
     InternalCanisterError : text;
     RegistrationModeOff;
     InvalidMetadata : text;
+    PasskeyWithThisPublicKeyIsAlreadyUsed;
 };
 
 type LookupByRegistrationIdError = variant {
@@ -594,6 +609,8 @@ type AuthnMethodReplaceError = variant {
     InvalidMetadata : text;
     // No authentication method found with the given public key.
     AuthnMethodNotFound;
+    // Passkey with this public key is already used
+    PasskeyWithThisPublicKeyIsAlreadyUsed;
 };
 
 type AuthnMethodMetadataReplaceError = variant {

@@ -16,26 +16,33 @@ export const idlFactory = ({ IDL }) => {
   });
   const Category = IDL.Record({ 'id' : IDL.Nat, 'name' : IDL.Text });
   const TastingNote = IDL.Record({
-    'id' : IDL.Nat,
     'name' : IDL.Text,
     'description' : IDL.Text,
     'imageUrl' : IDL.Text,
   });
+  const ProductInfo = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
   const PairingFood = IDL.Record({
-    'id' : IDL.Nat,
     'name' : IDL.Text,
     'description' : IDL.Text,
     'imageUrl' : IDL.Text,
+  });
+  const FlavorProfile = IDL.Record({
+    'value' : IDL.Float64,
+    'name' : IDL.Text,
   });
   const Product = IDL.Record({
     'id' : IDL.Nat,
     'categories' : IDL.Vec(Category),
     'tasting' : IDL.Vec(TastingNote),
+    'info' : IDL.Vec(ProductInfo),
     'name' : IDL.Text,
+    'classificationTag' : ProductInfo,
     'description' : IDL.Text,
+    'isHighlighted' : IDL.Bool,
     'imageUrl' : IDL.Text,
     'price' : IDL.Nat,
     'paring' : IDL.Vec(PairingFood),
+    'profile' : IDL.Vec(FlavorProfile),
   });
   const AboutMediaSection = IDL.Record({
     'title' : IDL.Text,
