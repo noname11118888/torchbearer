@@ -51,7 +51,7 @@ const aboutRoute = createRoute({
 
 const productRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/product',
+  path: '/products',
   component: ProductPage,
 });
 
@@ -69,7 +69,7 @@ const cartRoute = createRoute({
 
 const orderRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/order/$productId',
+  path: '/product/$productId',
   component: OrderPage,
 });
 

@@ -41,7 +41,7 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
   }
 
   const handleOrderClick = (id: bigint) => {
-    navigate({ to: `/order/${encodeURIComponent(id.toString())}` });
+    navigate({ to: `/product/${encodeURIComponent(id.toString())}` });
   };
 
   return (
@@ -126,7 +126,7 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
             <div className="text-center mt-12 fade-in-section">
               <Button
                 size="lg"
-                onClick={() => navigate({ to: '/product' })}
+                onClick={() => navigate({ to: '/products' })}
                 className="text-lg px-8 py-6"
               >
                 Xem thêm
