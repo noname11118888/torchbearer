@@ -21,7 +21,7 @@ import { toast } from 'sonner';
 
 export default function OrderPage() {
   const navigate = useNavigate();
-  const params = useParams({ from: '/order/$productId' });
+  const params = useParams({ from: '/product/$productId' });
   const productId = decodeURIComponent(params.productId);
   
   const { data: productsData, isLoading } = useGetProducts();
@@ -662,7 +662,7 @@ export default function OrderPage() {
                       <CarouselItem key={id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                         <Card 
                           className="cursor-pointer hover:shadow-xl transition-shadow"
-                          onClick={() => navigate({ to: `/order/${encodeURIComponent(id.toString())}` })}
+                          onClick={() => navigate({ to: `/product/${encodeURIComponent(id.toString())}` })}
                         >
                           <div className="aspect-[3/4] overflow-hidden rounded-t-lg bg-gradient-to-br from-muted/50 to-muted">
                             <img
