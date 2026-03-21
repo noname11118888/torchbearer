@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://torchbearerwine.com/sitemap.xml

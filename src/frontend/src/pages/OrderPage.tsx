@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -43,6 +43,22 @@ export default function OrderPage() {
 
   const product = productsData?.find(([id]) => id.toString() === productId)?.[1];
   const relatedProducts = productsData?.filter(([id]) => id.toString() !== productId).slice(0, 4) || [];
+
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.name} | Torch Bearer Premium Wine`;
+      
+      // Update meta description dynamically (limited effectiveness without SSR, but good for some crawlers)
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', product.description.substring(0, 160));
+      }
+    }
+    
+    return () => {
+      document.title = 'Torch Bearer | Rượu Vang Biodynamic Cao Cấp Từ Tasmania';
+    };
+  }, [product]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -217,7 +233,7 @@ export default function OrderPage() {
               {/* Product Summary */}
               <div>
                 <h1 className="text-4xl lg:text-5xl font-bold mb-3 text-foreground">{product.name}</h1>
-                <p className="text-lg text-foreground/60 mb-4">{product.classificationTag.name}</p>
+                <p className="text-lg text-foreground/60 mb-4">{product.classificationTag?.name || "Premium Tasmanian Wine"}</p>
                 
                 {/* Classification Tags */}
                 <div className="flex flex-wrap gap-2 mb-4">
