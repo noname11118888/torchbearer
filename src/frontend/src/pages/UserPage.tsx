@@ -52,7 +52,7 @@ export default function UserPage() {
             <h1 className="text-2xl font-bold mb-2">Tài khoản người dùng</h1>
             <p className="text-muted-foreground mb-6">Vui lòng đăng nhập để xem thông tin cá nhân và đơn hàng của bạn.</p>
             <Button onClick={login} size="lg" className="w-full">
-              Đăng nhập với Internet Identity
+              Đăng nhập
             </Button>
           </Card>
         </div>

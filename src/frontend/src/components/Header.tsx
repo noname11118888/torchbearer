@@ -89,7 +89,7 @@ const Header = () => {
               <button
                 key={item.label}
                 onClick={() => handleNavigation(item.href, item.isRoute)}
-                className="text-[#8B6508] hover:text-[#D4AF37] transition-colors font-medium"
+                className="text-[#D4AF37] hover:text-[#E5B53B] transition-colors font-medium"
               >
                 {item.label}
               </button>
@@ -97,7 +97,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-[#8B6508] hover:text-[#D4AF37]"
+              className="relative text-[#D4AF37] hover:text-[#E5B53B]"
               onClick={() => navigate({ to: '/user' })}
             >
               <User className={`h-5 w-5 ${identity ? 'text-primary fill-primary/20' : ''}`} />
@@ -105,7 +105,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-[#8B6508] hover:text-[#D4AF37]"
+              className="relative text-[#D4AF37] hover:text-[#E5B53B]"
               onClick={() => navigate({ to: '/cart' })}
             >
               <ShoppingCart className="h-5 w-5" />

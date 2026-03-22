@@ -115,7 +115,7 @@ export default function AdminManagementEditor() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Principal ID phải là định dạng hợp lệ của Internet Computer
+                Principal ID phải là định dạng hợp lệ
               </p>
             </div>
           </div>

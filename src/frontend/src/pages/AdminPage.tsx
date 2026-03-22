@@ -176,7 +176,7 @@ export default function AdminPage() {
                   Đang đăng nhập...
                 </>
               ) : (
-                'Đăng nhập với Internet Identity'
+                'Đăng nhập'
               )}
             </Button>
             <Button
