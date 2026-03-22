@@ -143,7 +143,7 @@ export interface UserProfile {
   'email' : string,
 }
 export interface _SERVICE {
-  'addAdmin' : ActorMethod<[string], undefined>,
+  'addAdmin' : ActorMethod<[Principal], undefined>,
   'addArticleItem' : ActorMethod<[string, Array<ArticleContent>], undefined>,
   'addCategory' : ActorMethod<[string], undefined>,
   'addContact' : ActorMethod<[ContactLocation], undefined>,
@@ -163,7 +163,8 @@ export interface _SERVICE {
   'getAllCustomerMessages' : ActorMethod<[], Array<[bigint, CustomerMessage]>>,
   'getArticleById' : ActorMethod<[bigint], [] | [Article]>,
   'getArticlePage' : ActorMethod<[bigint], Array<Article>>,
-  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerOrders' : ActorMethod<[bigint], Array<Order>>,
+  'getCallerUserProfile' : ActorMethod<[], UserProfile>,
   'getCategories' : ActorMethod<[], Array<[bigint, Category]>>,
   'getContacts' : ActorMethod<[], Array<ContactLocation>>,
   'getCustomerMessages' : ActorMethod<[bigint], Array<CustomerMessage>>,
@@ -187,6 +188,7 @@ export interface _SERVICE {
   'getTotalMessageCount' : ActorMethod<[], bigint>,
   'getTotalOrderCount' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isAdmin' : ActorMethod<[], boolean>,
   'ping' : ActorMethod<[], string>,
   'removeAdmin' : ActorMethod<[Principal], undefined>,
   'resetToDefault' : ActorMethod<[], undefined>,

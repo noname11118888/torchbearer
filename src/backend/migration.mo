@@ -235,6 +235,7 @@ module {
     nextUserId : Nat;
     nextTeamMemberId : Nat;
     nextIconLinkId : Nat;
+    nextArticleId: Nat;
 
     showProductPrices : Bool;
     
@@ -250,6 +251,31 @@ module {
     floatingBubbleConfig : T.FloatingBubbleConfig;
     footerData : T.FooterData;
     aboutSection : T.AboutSection;
+
+    articles : Map.Map<Nat, T.Article>;
+    userOrders : Map.Map<Principal, T.OrderList>;
+
+    teams : Map.Map<Nat, T.TeamMember>;
+    contacts : Map.Map<Nat, T.ContactLocation>;
+  };
+
+  public type OldOrderList = {
+    id : [Nat];
+  };
+
+  public type OldArticle = {
+    id : Nat;
+    title : Text;
+    publishTime : Int;
+    updateTime : Int;
+    content : [OldArticleContent];
+  };
+
+  public type OldArticleContent = {
+    title : Text;
+    description : Text;
+    mediaUrl : Text;
+    mediaType : Text;
   };
 
   type OldActor = {
@@ -262,6 +288,7 @@ module {
     nextUserId : Nat;
     nextTeamMemberId : Nat;
     nextIconLinkId : Nat;
+    nextArticleId: Nat;
 
     showProductPrices : Bool;
     
@@ -277,23 +304,13 @@ module {
     floatingBubbleConfig : OldFloatingBubbleConfig;
     footerData : OldFooterData;
     aboutSection : OldAboutSection;
-  };
 
-  // type NewActor = {
-  //   adminCms : AdminCMS.AdminCMSData;
-  //   userProfiles : Map.Map<Principal, OldUserProfile>;
-  //   categories : Map.Map<Text, OldCategory>;
-  //   products : Map.Map<Text, OldProduct>;
-  //   orders : Map.Map<Nat, OldOrder>;
-  //   nextOrderId : Nat;
-  //   floatingBubbleConfig : OldFloatingBubbleConfig;
-  //   aboutSection : OldAboutSection;
-  //   customerMessages : Map.Map<Nat, OldCustomerMessage>;
-  //   nextMessageId : Nat;
-  //   nextMediaId : Nat;
-  //   mediaItems : Map.Map<Nat, OldMediaItem>;
-  //   showProductPrices : Bool;
-  // };
+    articles : Map.Map<Nat, OldArticle>;
+    userOrders : Map.Map<Principal, OldOrderList>;
+
+    teams : Map.Map<Nat, OldTeamMember>;
+    contacts : Map.Map<Nat, OldContactLocation>;
+  };
 
   public func run(old : OldActor) : NewActor {
 
@@ -307,6 +324,8 @@ module {
       nextUserId = old.nextUserId;
       nextTeamMemberId = old.nextTeamMemberId;
       nextIconLinkId = old.nextIconLinkId;
+      nextArticleId = old.nextArticleId;
+
       showProductPrices = old.showProductPrices;
       userProfiles = old.userProfiles; // Assuming no changes needed
       categories = old.categories; // Assuming no changes needed
@@ -330,6 +349,11 @@ module {
         // processSteps = []; // Assuming empty for migration
         // teamMembers = []; // Assuming empty for migration
       };
+
+      articles = old.articles;
+      userOrders = old.userOrders;
+      teams = old.teams;
+      contacts = old.contacts;
     };
   };
 };

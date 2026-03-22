@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Menu, ShoppingCart } from 'lucide-react';
+import { Menu, ShoppingCart, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { useGetHeader } from '../hooks/useQueries';
 import { useCart } from '../contexts/CartContext';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { identity } = useInternetIdentity();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { data: headerData, isLoading } = useGetHeader();
@@ -92,6 +94,14 @@ const Header = () => {
                 {item.label}
               </button>
             ))}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-[#8B6508] hover:text-[#D4AF37]"
+              onClick={() => navigate({ to: '/user' })}
+            >
+              <User className={`h-5 w-5 ${identity ? 'text-primary fill-primary/20' : ''}`} />
+            </Button>
             <Button
               variant="ghost"
               size="icon"

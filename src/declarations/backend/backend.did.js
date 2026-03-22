@@ -112,21 +112,6 @@ export const idlFactory = ({ IDL }) => {
     'content' : IDL.Vec(ArticleContent),
     'publishTime' : IDL.Int,
   });
-  const UserProfile = IDL.Record({
-    'id' : IDL.Nat,
-    'principal' : IDL.Text,
-    'name' : IDL.Text,
-    'role' : IDL.Text,
-    'email' : IDL.Text,
-  });
-  const MediaItem = IDL.Record({
-    'id' : IDL.Nat,
-    'url' : IDL.Text,
-    'description' : IDL.Text,
-    'uploadTimestamp' : IDL.Int,
-    'caption' : IDL.Text,
-    'mediaType' : IDL.Text,
-  });
   const OrderStatus = IDL.Variant({
     'cancelled' : IDL.Null,
     'pending' : IDL.Null,
@@ -147,9 +132,24 @@ export const idlFactory = ({ IDL }) => {
     'items' : IDL.Vec(OrderItem),
     'customerEmail' : IDL.Text,
   });
+  const UserProfile = IDL.Record({
+    'id' : IDL.Nat,
+    'principal' : IDL.Text,
+    'name' : IDL.Text,
+    'role' : IDL.Text,
+    'email' : IDL.Text,
+  });
+  const MediaItem = IDL.Record({
+    'id' : IDL.Nat,
+    'url' : IDL.Text,
+    'description' : IDL.Text,
+    'uploadTimestamp' : IDL.Int,
+    'caption' : IDL.Text,
+    'mediaType' : IDL.Text,
+  });
   const CartItem = IDL.Record({ 'quantity' : IDL.Nat, 'product' : Product });
   return IDL.Service({
-    'addAdmin' : IDL.Func([IDL.Text], [], []),
+    'addAdmin' : IDL.Func([IDL.Principal], [], []),
     'addArticleItem' : IDL.Func([IDL.Text, IDL.Vec(ArticleContent)], [], []),
     'addCategory' : IDL.Func([IDL.Text], [], []),
     'addContact' : IDL.Func([ContactLocation], [], []),
@@ -173,7 +173,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getArticleById' : IDL.Func([IDL.Nat], [IDL.Opt(Article)], ['query']),
     'getArticlePage' : IDL.Func([IDL.Nat], [IDL.Vec(Article)], ['query']),
-    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerOrders' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [UserProfile], ['query']),
     'getCategories' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat, Category))],
@@ -221,6 +222,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'isAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'ping' : IDL.Func([], [IDL.Text], []),
     'removeAdmin' : IDL.Func([IDL.Principal], [], []),
     'resetToDefault' : IDL.Func([], [], []),

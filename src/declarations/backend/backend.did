@@ -185,7 +185,7 @@ type AboutMediaSection =
    title: text;
  };
 service : {
-  addAdmin: ("principal": text) -> ();
+  addAdmin: ("principal": principal) -> ();
   addArticleItem: (title: text, content: vec ArticleContent) -> ();
   addCategory: (name: text) -> ();
   addContact: (newContact: ContactLocation) -> ();
@@ -209,7 +209,8 @@ service : {
                                      }) query;
   getArticleById: (id: nat) -> (opt Article) query;
   getArticlePage: (page: nat) -> (vec Article) query;
-  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerOrders: (page: nat) -> (vec Order) query;
+  getCallerUserProfile: () -> (UserProfile) query;
   getCategories: () -> (vec record {
                               nat;
                               Category;
@@ -239,6 +240,7 @@ service : {
   getTotalMessageCount: () -> (nat) query;
   getTotalOrderCount: () -> (nat) query;
   getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isAdmin: () -> (bool) query;
   ping: () -> (text);
   removeAdmin: ("principal": principal) -> ();
   resetToDefault: () -> ();

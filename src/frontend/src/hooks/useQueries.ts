@@ -18,8 +18,7 @@ export function useGetCallerUserProfile() {
       }
       if (!actor) throw new Error('Actor not available');
       const res = await actor.getCallerUserProfile();
-      // Actor returns [] | [UserProfile] per candid; unwrap to null or UserProfile
-      return (res && (res as any).length) ? (res as any)[0] as UserProfile : null;
+      return res as UserProfile;
     },
     enabled: !!actor && !actorFetching || isMockMode(),
     retry: false,
@@ -437,9 +436,28 @@ export function useGetTotalOrderCount() {
   });
 }
 
+// User Personal Order Queries
+export function useGetCallerOrders(page: number) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Order[]>({
+    queryKey: ['callerOrders', 'paginated', page],
+    queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockOrders(10).map(([_, o]) => o);
+      }
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCallerOrders(BigInt(page));
+    },
+    enabled: !!actor && !isFetching || isMockMode(),
+    staleTime: 1000 * 60 * 2,
+  });
+}
+
 // Admin Management Queries
 export function useGetAdmins() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<AdminEntry[]>({
     queryKey: ['admins'],
@@ -451,8 +469,27 @@ export function useGetAdmins() {
       if (!actor) throw new Error('Actor not available');
       return actor.getAdmins();
     },
-    enabled: !!actor && !isFetching || isMockMode(),
+    enabled: !!actor && !actorFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useIsAdmin() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ['isAdmin'],
+    queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return true; // Mock mode allows admin access
+      }
+      if (!actor) throw new Error('Actor not available');
+      return actor.isAdmin();
+    },
+    enabled: !!actor && !actorFetching || isMockMode(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false,
   });
 }
 

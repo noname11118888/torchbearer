@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from "./../hooks/useInternetIdentity";
-import { useGetCallerUserProfile, useSaveCallerUserProfile } from '../hooks/useQueries';
+import { useGetCallerUserProfile, useSaveCallerUserProfile, useIsAdmin } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldAlert } from 'lucide-react';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -24,6 +24,7 @@ export default function AdminPage() {
 
   // Nested component that will only be rendered (and therefore run hooks) after authentication
   function AuthenticatedAdmin() {
+    const { data: isAdmin, isLoading: adminCheckLoading } = useIsAdmin();
     const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
     const saveProfile = useSaveCallerUserProfile();
     const [profileName, setProfileName] = useState('');
@@ -41,10 +42,47 @@ export default function AdminPage() {
       });
     };
 
-    if (profileLoading) {
+    if (adminCheckLoading || profileLoading) {
       return (
         <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+    }
+
+    if (!isAdmin) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+          <div className="max-w-md w-full text-center space-y-6 bg-card p-8 rounded-xl shadow-lg border border-destructive/20">
+            <div className="flex justify-center">
+              <div className="p-3 bg-destructive/10 rounded-full">
+                <ShieldAlert className="h-12 w-12 text-destructive" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold tracking-tight">Access Denied</h2>
+              <p className="text-muted-foreground">
+                You do not have administrative privileges to access this area. 
+                Please contact the system administrator if you believe this is an error.
+              </p>
+            </div>
+            <div className="pt-4 flex flex-col gap-3">
+              <Button 
+                variant="default" 
+                className="w-full"
+                onClick={() => navigate({ to: '/' })}
+              >
+                Return to Home
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full"
+                onClick={() => window.location.reload()}
+              >
+                Retry Access
+              </Button>
+            </div>
+          </div>
         </div>
       );
     }
