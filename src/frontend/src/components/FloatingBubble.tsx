@@ -112,7 +112,7 @@ export default function FloatingBubble() {
           {/* Product Link */}
           <button
             onClick={() => {
-              navigate({ to: '/product' });
+              navigate({ to: '/products' });
               setIsOpen(false);
             }}
             className="w-full flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"

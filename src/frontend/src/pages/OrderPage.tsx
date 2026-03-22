@@ -113,7 +113,7 @@ export default function OrderPage() {
           <div className="container mx-auto px-4">
             <div className="text-center py-16">
               <h1 className="text-3xl font-bold mb-4">Không tìm thấy sản phẩm</h1>
-              <Button onClick={() => navigate({ to: '/product' })}>
+              <Button onClick={() => navigate({ to: '/products' })}>
                 Quay lại trang sản phẩm
               </Button>
             </div>
@@ -189,7 +189,7 @@ export default function OrderPage() {
           <div className="mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate({ to: '/product' })}
+              onClick={() => navigate({ to: '/products' })}
               className="mb-4 text-foreground/70 hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
