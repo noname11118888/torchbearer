@@ -457,7 +457,7 @@ export function useGetCallerOrders(page: number) {
 
 // Admin Management Queries
 export function useGetAdmins() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<AdminEntry[]>({
     queryKey: ['admins'],
@@ -469,8 +469,27 @@ export function useGetAdmins() {
       if (!actor) throw new Error('Actor not available');
       return actor.getAdmins();
     },
-    enabled: !!actor && !isFetching || isMockMode(),
+    enabled: !!actor && !actorFetching || isMockMode(),
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useIsAdmin() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ['isAdmin'],
+    queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return true; // Mock mode allows admin access
+      }
+      if (!actor) throw new Error('Actor not available');
+      return actor.isAdmin();
+    },
+    enabled: !!actor && !actorFetching || isMockMode(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false,
   });
 }
 
