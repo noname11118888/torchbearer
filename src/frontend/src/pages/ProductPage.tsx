@@ -204,7 +204,7 @@ export default function ProductPage() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-foreground/70 mb-4 line-clamp-2">{product.description}</p>
+                        <p className="text-foreground/70 mb-4 line-clamp-2 whitespace-pre-wrap">{product.description}</p>
                         <div className="space-y-3">
                           {showPrices && product.price > 0n && (
                             <div className="flex items-center justify-between">

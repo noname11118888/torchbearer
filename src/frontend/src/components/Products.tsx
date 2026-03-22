@@ -100,7 +100,7 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
                     <CardDescription className="text-base">{wine.type}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
-                    <p className="text-foreground/70 mb-4 flex-1">{wine.description}</p>
+                    <p className="text-foreground/70 mb-4 flex-1 whitespace-pre-wrap">{wine.description}</p>
                     {showPrices && wine.price > 0n && (
                       <div className="flex items-center justify-between mb-4">
                         <p className="text-primary font-semibold text-lg">

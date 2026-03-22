@@ -39,7 +39,7 @@ const About = () => {
                 <h2 className="text-4xl md:text-5xl font-bold text-foreground">
                   {title}
                 </h2>
-                <p className="text-lg text-foreground/70 leading-relaxed">
+                <p className="text-lg text-foreground/70 leading-relaxed whitespace-pre-wrap">
                   {content}
                 </p>
                 <Button

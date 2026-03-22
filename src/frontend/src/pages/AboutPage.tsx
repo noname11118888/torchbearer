@@ -20,7 +20,7 @@ const TextImageStacked = ({ mediaUrl, title, description }: MediaSectionProps) =
   <div className="w-full bg-card rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 fade-in-section">
     <div className="p-6 space-y-3">
       <h3 className="text-2xl font-bold text-foreground">{title}</h3>
-      <p className="text-foreground/70 leading-relaxed">{description}</p>
+      <p className="text-foreground/70 leading-relaxed whitespace-pre-wrap">{description}</p>
     </div>
     {mediaUrl && (
       <div className="relative h-64">
@@ -55,7 +55,7 @@ const ImageLeftTextRight = ({ mediaUrl, title, description }: MediaSectionProps)
       )}
       <div className="md:w-1/2 p-6 space-y-3">
         <h3 className="text-2xl font-bold text-foreground">{title}</h3>
-        <p className="text-foreground/70 leading-relaxed">{description}</p>
+        <p className="text-foreground/70 leading-relaxed whitespace-pre-wrap">{description}</p>
       </div>
     </div>
   </div>
@@ -79,7 +79,7 @@ const TextLeftImageRight = ({ mediaUrl, title, description }: MediaSectionProps)
       )}
       <div className="md:w-1/2 p-6 space-y-3">
         <h3 className="text-2xl font-bold text-foreground">{title}</h3>
-        <p className="text-foreground/70 leading-relaxed">{description}</p>
+        <p className="text-foreground/70 leading-relaxed whitespace-pre-wrap">{description}</p>
       </div>
     </div>
   </div>
@@ -101,7 +101,7 @@ const FullWidthWithOverlay = ({ mediaUrl, title, description }: MediaSectionProp
     <div className="absolute inset-0 bg-black/40 flex items-center">
       <div className="p-8 md:p-12 text-white max-w-2xl">
         <h3 className="text-3xl md:text-4xl font-bold mb-4">{title}</h3>
-        <p className="text-lg leading-relaxed">{description}</p>
+        <p className="text-lg leading-relaxed whitespace-pre-wrap">{description}</p>
       </div>
     </div>
   </div>
@@ -122,7 +122,7 @@ const ImageWithOverlayCentered = ({ mediaUrl, title, description }: MediaSection
     )}
     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-8">
       <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">{title}</h3>
-      <p className="text-white/90 leading-relaxed max-w-2xl">{description}</p>
+      <p className="text-white/90 leading-relaxed max-w-2xl whitespace-pre-wrap">{description}</p>
     </div>
   </div>
 );
@@ -260,7 +260,7 @@ export default function AboutPage() {
                   <h1 className="text-4xl md:text-5xl font-bold text-foreground">
                     {introHeading}
                   </h1>
-                  <p className="text-lg text-foreground/70 leading-relaxed">
+                  <p className="text-lg text-foreground/70 leading-relaxed whitespace-pre-wrap">
                     {mainDescription}
                   </p>
                 </>
