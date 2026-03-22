@@ -7,7 +7,8 @@
     },
     "backend": {
       "main": "src/backend/main.mo",
-      "type": "motoko"
+      "type": "motoko",
+      "args": "--enhanced-orthogonal-persistence"
     },
     "frontend": {
       "dependencies": [

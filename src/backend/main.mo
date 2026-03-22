@@ -40,6 +40,8 @@ persistent actor {
 
   let articles = Map.empty<Nat, T.Article>();
   let userOrders = Map.empty<Principal, T.OrderList>();
+  let teams = Map.empty<Nat, T.TeamMember>();
+  let contacts = Map.empty<Nat, T.ContactLocation>();
 
   var floatingBubbleConfig : T.FloatingBubbleConfig = {
     backgroundColor = "#FFA500";
@@ -73,8 +75,8 @@ persistent actor {
   transient let mediaManager = ObjectCRUD<Nat, T.MediaItem>(mediaItems, Nat.compare);
   transient let orderManager = ObjectCRUD<Nat, T.Order>(orders, Nat.compare);
   transient let customerMessageManager = ObjectCRUD<Nat, T.CustomerMessage>(customerMessages, Nat.compare);
-  transient let contactManager = ObjectCRUD<Nat, T.ContactLocation>(Map.empty<Nat, T.ContactLocation>(), Nat.compare);
-  transient let teamMemberManager = ObjectCRUD<Nat, T.TeamMember>(Map.empty<Nat, T.TeamMember>(), Nat.compare);
+  transient let contactManager = ObjectCRUD<Nat, T.ContactLocation>(contacts, Nat.compare);
+  transient let teamMemberManager = ObjectCRUD<Nat, T.TeamMember>(teams, Nat.compare);
   transient let contentSectionManager = ObjectCRUD<Text, T.ContentSection>(contentSections, Text.compare);
   transient let iconLinkManager = ObjectCRUD<Nat, T.IconLink>(iconLinks, Nat.compare);
 
@@ -219,7 +221,7 @@ persistent actor {
 
   // Media CRUD - Requires authentication (admin CMS operations)
   public shared ({ caller }) func addMediaItem(url : Text, caption : Text, description : Text, mediaType : Text) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     let newMediaItem : T.MediaItem = {
       id = nextMediaId;
       url;
@@ -233,7 +235,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func updateMediaItem(id : Nat, url : Text, caption : Text, description : Text) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     switch (mediaManager.read(id)) {
       case (null) { Runtime.trap("Media item not found") };
       case (?mediaItem) {
@@ -249,7 +251,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func deleteMediaItem(id : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     if (not mediaManager.isExist(id)) {
       Runtime.trap("Media item not found");
     };
@@ -271,7 +273,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func addArticleItem(title : Text, content : [T.ArticleContent]) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     let newArticleItem : T.Article = {
       id = nextArticleId;
       title = title;
@@ -284,7 +286,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func updateArticleItem(id : Nat, title : Text, content : [T.ArticleContent]) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     switch (articleManager.read(id)) {
       case (null) { Runtime.trap("Article item not found") };
       case (?item) {
@@ -300,7 +302,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func deleteArticleItem(id : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     if (not articleManager.isExist(id)) {
       Runtime.trap("Article item not found");
     };
@@ -309,7 +311,7 @@ persistent actor {
 
   // Admin CMS Data - Requires authentication
   public query ({ caller }) func getAdminCMSData() : async T.SerializableAdminCMSData {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
 
     {
       header = switch (contentSectionManager.read(HEADER_SECTION_KEY)) {
@@ -336,7 +338,7 @@ persistent actor {
 
   // Order Management - Viewing requires authentication (contains sensitive customer data)
   public query ({ caller }) func getOrders(page : Nat) : async [T.Order] {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     orderManager.getListValues(page * 10, 10);
   };
 
@@ -345,7 +347,7 @@ persistent actor {
   };
 
   public query ({ caller }) func getOrderById(id : Nat) : async ?T.Order {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     orderManager.read(id);
   };
 
@@ -406,7 +408,7 @@ persistent actor {
 
   // Order Status Management - Requires authentication
   public shared ({ caller }) func updateOrderStatus(orderId : Nat, status : T.OrderStatus) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     switch (orderManager.read(orderId)) {
       case (null) { Runtime.trap("Order not found") };
       case (?order) {
@@ -428,7 +430,7 @@ persistent actor {
   };
 
   public shared ({caller}) func deleteOrder(orderId : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     if (not orderManager.isExist(orderId)) {
       Runtime.trap("Order not found");
     };
@@ -443,22 +445,22 @@ persistent actor {
   };
 
   public query ({ caller }) func getCustomerMessages(page : Nat) : async [T.CustomerMessage] {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     customerMessageManager.getListValues(page * 10, 10);
   };
 
   public query ({ caller }) func getTotalMessageCount() : async Nat {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     customerMessageManager.size();
   };
 
   public query ({ caller }) func getAllCustomerMessages() : async [(Nat, T.CustomerMessage)] {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     customerMessageManager.getAll();
   };
 
   public shared ({ caller }) func deleteCustomerMessage(id : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     if (not customerMessageManager.isExist(id)) {
       Runtime.trap("Customer message not found");
     };
@@ -467,7 +469,7 @@ persistent actor {
 
   // Category Management - Requires authentication
   public shared ({ caller }) func addCategory(name : Text) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     let filter = categoryManager.filter(
       func(_id, category) {
         Text.equal(category.name, name);
@@ -484,7 +486,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func updateCategory(category : T.Category) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     switch (categoryManager.read(category.id)) {
       case (null) { Runtime.trap("Category not found") };
       case (?c) {
@@ -494,7 +496,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func deleteCategory(categoryId : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     if (categoryManager.isExist(categoryId) == false) {
       Runtime.trap("Category not found");
     };
@@ -503,13 +505,13 @@ persistent actor {
 
   // Product Management - Requires authentication
   public shared ({ caller }) func addProduct(product : T.Product) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     productManager.create(nextProductId, { product with id = nextProductId });
     nextProductId += 1;
   };
 
   public shared ({ caller }) func updateProduct(product : T.Product) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     switch (productManager.read(product.id)) {
       case (null) { Runtime.trap("Product not found") };
       case (?p) {
@@ -519,7 +521,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func deleteProduct(id : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     productManager.delete(id);
   };
 
@@ -550,12 +552,12 @@ persistent actor {
 
   // Admin CMS Update Endpoints - Require user permission
   public shared ({ caller }) func updateHeroSection(hero : T.ContentSection) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     contentSectionManager.update(HERO_SECTION_KEY, hero);
   };
 
   public shared ({ caller }) func updateTeamMembers(members : [T.TeamMember]) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     ignore Array.map(members,
       func(member) {
         if (member.id <= 0) {
@@ -569,17 +571,17 @@ persistent actor {
   };
 
   public shared ({ caller }) func updateFooterData(footer : T.FooterData) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     footerData := footer;
   };
 
   public shared ({ caller }) func updateHeader(header : T.ContentSection) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     contentSectionManager.update(HEADER_SECTION_KEY, header);
   };
 
   public shared ({ caller }) func updateIconLinks(links : [T.IconLink]) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     ignore Array.map(links,
       func(link) {
         if (link.id <= 0) {
@@ -593,7 +595,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func updateMedia(media : [T.MediaItem]) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     ignore Array.map(media,
       func(item) {
         mediaManager.update(item.id, item);
@@ -603,13 +605,13 @@ persistent actor {
 
   // Contact Management - Requires authentication
   public shared ({ caller }) func addContact(newContact : T.ContactLocation) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     contactManager.create(nextContactId, { newContact with id = nextContactId });
     nextContactId += 1;
   };
 
   public shared ({ caller }) func updateContact(updatedContact : T.ContactLocation) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     switch (contactManager.read(updatedContact.id)) {
       case (null) { Runtime.trap("Contact not found") };
       case (?c) {
@@ -619,12 +621,12 @@ persistent actor {
   };
 
   public shared ({ caller }) func deleteContact(id : Nat) : async (Bool) {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     contactManager.delete(id);
   };
 
   public shared ({ caller }) func setHeadOffice(id : Nat) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     ignore Array.map(contactManager.getAllValues(),
       func(contact) {
         let isHeadOffice = if (contact.id == id) { true } else { false };
@@ -636,19 +638,19 @@ persistent actor {
 
   // Floating Bubble Configuration - Requires authentication
   public shared ({ caller }) func updateFloatingBubbleConfig(config : T.FloatingBubbleConfig) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     floatingBubbleConfig := config;
   };
 
   // About Section Management - Requires authentication
   public shared ({ caller }) func updateAboutSection(about : T.AboutSection) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     aboutSection := about;
   };
 
   // Reset to Default - Requires authentication
   public shared ({ caller }) func resetToDefault() : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     floatingBubbleConfig := {
       backgroundColor = "#FFA500";
       icon = "phone";
@@ -694,15 +696,17 @@ persistent actor {
   let assetActor : ASSET_ACTOR = actor("vatl5-piaaa-aaaaf-qat4q-cai");
 
   public shared ({ caller }) func addAdmin(principal : Principal) : async () {
-    requireAdminPermission(caller);
     AccessControl.assignRole(accessControlState, caller, principal, #admin);
     await assetActor.authorize(principal);
   };
 
   public shared ({ caller }) func removeAdmin(principal : Principal) : async () {
-    requireAdminPermission(caller);
-    AccessControl.assignRole(accessControlState, caller, principal, #guest);
-    await assetActor.deauthorize(principal);
+    AccessControl.removeRole(accessControlState, caller, principal);
+    ignore assetActor.deauthorize(principal);
+  };
+
+  public query ({caller}) func isAdmin() : async (Bool) {
+    AccessControl.isAdmin(accessControlState, caller)
   };
 
   // Product Price Visibility - Requires authentication to update, public to query
@@ -711,7 +715,7 @@ persistent actor {
   };
 
   public shared ({ caller }) func updateProductPriceVisibility(showPrices : Bool) : async () {
-    requireUserPermission(caller);
+    requireAdminPermission(caller);
     showProductPrices := showPrices;
   };
 

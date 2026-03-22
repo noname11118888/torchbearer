@@ -68,10 +68,18 @@ module {
     };
   };
 
+  public func removeRole(state : AccessControlState, caller : Principal, user : Principal) {
+      if (not superAdmin(caller)) {
+        if (not (isAdmin(state, caller))) {
+          Runtime.trap("Unauthorized: Only admins can assign user roles");
+        };
+      };
+      Map.remove(state.userRoles, Principal.compare, user);
+  };
+
   public func hasPermission(state : AccessControlState, caller : Principal, requiredRole : UserRole) : Bool {
-    // let userRole = getUserRole(state, caller);
-    // if (userRole == #admin or requiredRole == #guest) { true } else { userRole == requiredRole };
-    true;
+    let userRole = getUserRole(state, caller);
+    if (userRole == #admin or requiredRole == #guest) { true } else { userRole == requiredRole };
   };
 
   public func isAdmin(state : AccessControlState, caller : Principal) : Bool {

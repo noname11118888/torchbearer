@@ -222,6 +222,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'isAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'ping' : IDL.Func([], [IDL.Text], []),
     'removeAdmin' : IDL.Func([IDL.Principal], [], []),
     'resetToDefault' : IDL.Func([], [], []),

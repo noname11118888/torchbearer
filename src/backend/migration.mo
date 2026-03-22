@@ -254,6 +254,9 @@ module {
 
     articles : Map.Map<Nat, T.Article>;
     userOrders : Map.Map<Principal, T.OrderList>;
+
+    teams : Map.Map<Nat, T.TeamMember>;
+    contacts : Map.Map<Nat, T.ContactLocation>;
   };
 
   public type OldOrderList = {
@@ -304,6 +307,9 @@ module {
 
     articles : Map.Map<Nat, OldArticle>;
     userOrders : Map.Map<Principal, OldOrderList>;
+
+    teams : Map.Map<Nat, OldTeamMember>;
+    contacts : Map.Map<Nat, OldContactLocation>;
   };
 
   public func run(old : OldActor) : NewActor {
@@ -346,7 +352,8 @@ module {
 
       articles = old.articles;
       userOrders = old.userOrders;
-
+      teams = old.teams;
+      contacts = old.contacts;
     };
   };
 };

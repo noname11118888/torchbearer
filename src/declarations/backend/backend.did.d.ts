@@ -188,6 +188,7 @@ export interface _SERVICE {
   'getTotalMessageCount' : ActorMethod<[], bigint>,
   'getTotalOrderCount' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isAdmin' : ActorMethod<[], boolean>,
   'ping' : ActorMethod<[], string>,
   'removeAdmin' : ActorMethod<[Principal], undefined>,
   'resetToDefault' : ActorMethod<[], undefined>,

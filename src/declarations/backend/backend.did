@@ -240,6 +240,7 @@ service : {
   getTotalMessageCount: () -> (nat) query;
   getTotalOrderCount: () -> (nat) query;
   getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isAdmin: () -> (bool) query;
   ping: () -> (text);
   removeAdmin: ("principal": principal) -> ();
   resetToDefault: () -> ();
