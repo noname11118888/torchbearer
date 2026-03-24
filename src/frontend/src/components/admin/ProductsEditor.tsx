@@ -333,72 +333,6 @@ export default function ProductsEditor() {
                             value={infoItem.name}
                             onValueChange={(value) => {
                               const newInfo = [...formData.info];
-                              newInfo[index] = { ...newInfo[index], name: value === 'Other' ? '' : value };
-                              setFormData({ ...formData, info: newInfo });
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn thông tin" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {productInfoSuggestions.map(suggestion => (
-                                <SelectItem key={suggestion} value={suggestion}>
-                                  {suggestion}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {infoItem.name === '' && (
-                            <Input
-                              placeholder="Tên thông tin tùy chỉnh"
-                              value={infoItem.name}
-                              onChange={(e) => {
-                                const newInfo = [...formData.info];
-                                newInfo[index] = { ...newInfo[index], name: e.target.value };
-                                setFormData({ ...formData, info: newInfo });
-                              }}
-                              className="mt-2"
-                            />
-                          )}
-                        </div>
-                        <Input
-                          placeholder="Giá trị (ví dụ: 2021)"
-                          value={infoItem.value}
-                          onChange={(e) => {
-                            const newInfo = [...formData.info];
-                            newInfo[index] = { ...newInfo[index], value: e.target.value };
-                            setFormData({ ...formData, info: newInfo });
-                          }}
-                        />
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => {
-                            const newInfo = formData.info.filter((_, i) => i !== index);
-                            setFormData({ ...formData, info: newInfo });
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Product Info (Dynamic Fields) */}
-                <div className="space-y-2">
-                  <Label>Thông tin sản phẩm / Product Information</Label>
-                  <div className="space-y-3 border rounded-md p-4">
-                    {formData.info.length === 0 && (
-                      <p className="text-sm text-foreground/60">Chưa có thông tin sản phẩm nào.</p>
-                    )}
-                    {formData.info.map((infoItem, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <div className="flex-1">
-                          <Select
-                            value={infoItem.name}
-                            onValueChange={(value) => {
-                              const newInfo = [...formData.info];
                               if (value !== 'Other' && newInfo.some((item, i) => i !== index && item.name === value)) {
                                 toast.error('Tên thông tin sản phẩm đã tồn tại. Vui lòng chọn tên khác.');
                                 return;
@@ -416,9 +350,10 @@ export default function ProductsEditor() {
                                   {suggestion}
                                 </SelectItem>
                               ))}
+                              <SelectItem value="Other">Khác...</SelectItem>
                             </SelectContent>
                           </Select>
-                          {infoItem.name === '' && (
+                          {(infoItem.name === '' || !productInfoSuggestions.includes(infoItem.name)) && (
                             <Input
                               placeholder="Tên thông tin tùy chỉnh"
                               value={infoItem.name}

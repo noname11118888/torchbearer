@@ -212,7 +212,7 @@ export default function OrderPage() {
                 />
               </div>
               {/* Thumbnail Gallery - placeholder for future enhancement */}
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2 mb-6">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="aspect-square rounded-md overflow-hidden bg-muted/30 border-2 border-transparent hover:border-primary cursor-pointer transition-colors">
                     <img
@@ -225,6 +225,14 @@ export default function OrderPage() {
                     />
                   </div>
                 ))}
+              </div>
+
+              {/* Product Description Moved Here */}
+              <div className="bg-muted/30 p-6 rounded-lg border border-border/50">
+                <h3 className="text-xl font-semibold mb-4 border-b pb-2">Mô tả sản phẩm / Description</h3>
+                <p className="text-foreground/70 leading-relaxed whitespace-pre-wrap">
+                  {product.description}
+                </p>
               </div>
             </div>
 
@@ -259,10 +267,6 @@ export default function OrderPage() {
                     <span className="text-xl text-foreground/60">VNĐ</span>
                   </div>
                 )}
-
-                <p className="text-foreground/70 leading-relaxed mb-6">
-                  {product.description}
-                </p>
               </div>
 
               <Separator />
