@@ -5,16 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { useGetProductPriceVisibility } from '../hooks/useQueries';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
-import type {Product } from '@/backend';
-
-interface DisplayWine {
-  id: bigint;
-  name: string;
-  type: string;
-  description: string;
-  image: string;
-  price: bigint;
-}
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import type { Product } from '@/backend';
 
 interface ProductsProps {
   products?: Product[];
@@ -78,62 +76,77 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
             </p>
           </div>
         ) : (
-          <>
-            <div className="grid md:grid-cols-3 gap-8">
-              {displayWines.map((wine, index) => (
-                <Card
-                  key={`${wine.name}-${index}`}
-                  className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 fade-in-section flex flex-col"
-                >
-                  <div className="relative h-64 overflow-hidden">
-                    <img
-                      src={wine.image}
-                      alt={wine.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                      onError={(e) => {
-                        e.currentTarget.src = '/assets/wine.jpg';
-                      }}
-                    />
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-2xl">{wine.name}</CardTitle>
-                    <CardDescription className="text-base">{wine.type}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <p className="text-foreground/70 mb-4 flex-1">{wine.description}</p>
-                    {showPrices && wine.price > 0n && (
-                      <div className="flex items-center justify-between mb-4">
-                        <p className="text-primary font-semibold text-lg">
-                          {Number(wine.price).toLocaleString('vi-VN')} VNĐ
-                        </p>
-                        <Badge variant="outline">Nổi bật</Badge>
-                      </div>
-                    )}
-                    <Button
-                      onClick={() => handleOrderClick(wine.id)}
-                      className="w-full"
-                      size="lg"
+          <div className="fade-in-section relative px-12">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {displayWines.map((wine, index) => (
+                  <CarouselItem key={`${wine.id}-${index}`} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card
+                      className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full border-none shadow-md"
                     >
-                      <ShoppingCart className="mr-2 h-5 w-5" />
-                      Đặt hàng
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <div 
+                        className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-muted/50 to-muted cursor-pointer"
+                        onClick={() => handleOrderClick(wine.id)}
+                      >
+                        <img
+                          src={wine.image}
+                          alt={wine.name}
+                          className="w-full h-full object-contain p-6 transition-transform duration-500 hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src = '/assets/wine.jpg';
+                          }}
+                        />
+                      </div>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-2xl line-clamp-1">{wine.name}</CardTitle>
+                        <CardDescription className="text-base">{wine.type}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-1 flex flex-col">
+                        <p className="text-foreground/70 mb-4 flex-1 line-clamp-2 text-sm leading-relaxed">
+                          {wine.description}
+                        </p>
+                        {showPrices && wine.price > 0n && (
+                          <div className="flex items-center justify-between mb-4">
+                            <p className="text-primary font-bold text-lg">
+                              {Number(wine.price).toLocaleString('vi-VN')} <span className="text-xs font-normal opacity-70">VNĐ</span>
+                            </p>
+                            <Badge variant="secondary" className="bg-primary/10 text-primary border-none">Nổi bật</Badge>
+                          </div>
+                        )}
+                        <Button
+                          onClick={() => handleOrderClick(wine.id)}
+                          className="w-full"
+                        >
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          Xem chi tiết
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-6" />
+              <CarouselNext className="-right-6" />
+            </Carousel>
 
             {/* View More Button */}
-            <div className="text-center mt-12 fade-in-section">
+            <div className="text-center mt-12">
               <Button
-                size="lg"
+                variant="ghost"
                 onClick={() => navigate({ to: '/ruou-vang' })}
-                className="text-lg px-8 py-6"
+                className="text-primary hover:bg-primary/5 font-semibold"
               >
-                Xem thêm
+                Khám phá tất cả sản phẩm
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </section>

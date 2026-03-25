@@ -177,11 +177,11 @@ export default function ProductPage() {
                       key={`${product.name}-${index}`}
                       className="overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
                     >
-                      <div className="relative h-64 overflow-hidden">
+                      <div className="relative h-64 overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
                         <img
                           src={imageUrl}
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                          className="w-full h-full object-contain p-4 transition-transform duration-300 hover:scale-110"
                           onError={(e) => {
                             e.currentTarget.src = '/assets/image.png';
                           }}
@@ -204,7 +204,7 @@ export default function ProductPage() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-foreground/70 mb-4 line-clamp-2">{product.description}</p>
+                        <p className="text-foreground/70 mb-4 line-clamp-2 text-sm leading-relaxed min-h-[3rem]">{product.description}</p>
                         <div className="space-y-3">
                           {showPrices && product.price > 0n && (
                             <div className="flex items-center justify-between">
