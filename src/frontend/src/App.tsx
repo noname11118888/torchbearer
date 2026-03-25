@@ -46,19 +46,19 @@ const indexRoute = createRoute({
 
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/about',
+  path: '/torch-bearer',
   component: AboutPage,
 });
 
 const productRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/products',
+  path: '/ruou-vang',
   component: ProductPage,
 });
 
 const contactRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/contact',
+  path: '/lien-he',
   component: ContactPage,
 });
 
@@ -70,25 +70,25 @@ const cartRoute = createRoute({
 
 const orderRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/product/$productId',
+  path: '/ruou-vang/$productId',
   component: OrderPage,
 });
 
 const mediaRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/media',
+  path: '/thu-vien-ruou-vang',
   component: MediaPage,
 });
 
 const articleRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/article',
+  path: '/cam-nang-ruou-vang',
   component: ArticleListPage,
 });
 
 const articleDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/article/$id',
+  path: '/cam-nang-ruou-vang/$id',
   component: ArticleDetailPage,
 });
 

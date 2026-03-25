@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://torchbearerwine.com/sitemap.xml
+Sitemap: https://torchbearer.vn/sitemap.xml

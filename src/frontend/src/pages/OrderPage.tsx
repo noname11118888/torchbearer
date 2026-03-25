@@ -21,7 +21,7 @@ import { toast } from 'sonner';
 
 export default function OrderPage() {
   const navigate = useNavigate();
-  const params = useParams({ from: '/product/$productId' });
+  const params = useParams({ from: '/ruou-vang/$productId' });
   const productId = decodeURIComponent(params.productId);
   
   const { data: productsData, isLoading } = useGetProducts();
@@ -113,7 +113,7 @@ export default function OrderPage() {
           <div className="container mx-auto px-4">
             <div className="text-center py-16">
               <h1 className="text-3xl font-bold mb-4">Không tìm thấy sản phẩm</h1>
-              <Button onClick={() => navigate({ to: '/products' })}>
+              <Button onClick={() => navigate({ to: '/ruou-vang' })}>
                 Quay lại trang sản phẩm
               </Button>
             </div>
@@ -189,7 +189,7 @@ export default function OrderPage() {
           <div className="mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate({ to: '/products' })}
+              onClick={() => navigate({ to: '/ruou-vang' })}
               className="mb-4 text-foreground/70 hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -666,7 +666,7 @@ export default function OrderPage() {
                       <CarouselItem key={id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                         <Card 
                           className="cursor-pointer hover:shadow-xl transition-shadow"
-                          onClick={() => navigate({ to: `/product/${encodeURIComponent(id.toString())}` })}
+                          onClick={() => navigate({ to: `/ruou-vang/${encodeURIComponent(id.toString())}` })}
                         >
                           <div className="aspect-[3/4] overflow-hidden rounded-t-lg bg-gradient-to-br from-muted/50 to-muted">
                             <img

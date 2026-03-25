@@ -112,7 +112,7 @@ export default function FloatingBubble() {
           {/* Product Link */}
           <button
             onClick={() => {
-              navigate({ to: '/products' });
+              navigate({ to: '/ruou-vang' });
               setIsOpen(false);
             }}
             className="w-full flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
@@ -132,7 +132,7 @@ export default function FloatingBubble() {
           {/* Media Gallery Link */}
           <button
             onClick={() => {
-              navigate({ to: '/media' });
+              navigate({ to: '/thu-vien-ruou-vang' });
               setIsOpen(false);
             }}
             className="w-full flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"

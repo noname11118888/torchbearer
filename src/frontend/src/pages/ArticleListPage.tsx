@@ -45,7 +45,7 @@ export default function ArticleListPage() {
   const hasPrevPage = currentPage > 0;
 
   const handleArticleClick = (articleId: number) => {
-    navigate({ to: `/article/${articleId}` });
+    navigate({ to: `/cam-nang-ruou-vang/${articleId}` });
   };
 
   const handlePreviousPage = () => {

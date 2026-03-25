@@ -153,7 +153,7 @@ export default function UserPage() {
                     <div className="text-center py-12">
                       <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-20" />
                       <p className="text-muted-foreground">Bạn chưa có đơn hàng nào.</p>
-                      <Button variant="link" onClick={() => window.location.href='/products'}>
+                      <Button variant="link" onClick={() => window.location.href='/ruou-vang'}>
                         Mua sắm ngay
                       </Button>
                     </div>

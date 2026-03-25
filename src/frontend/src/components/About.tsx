@@ -17,7 +17,7 @@ const About = () => {
   const content = aboutData?.mainDescription || 'Với trang trại rượu được thành lập từ năm 1994, công ty rượu Người Cầm Đuốc được thành lập từ vùng rượu nổi tiếng thế giới – thung lũng sông Coal, thuộc tiểu bang Tasmania, Úc Đại Lợi.';
 
   const handleLearnMore = () => {
-    navigate({ to: '/about' });
+    navigate({ to: '/torch-bearer' });
   };
 
   return (

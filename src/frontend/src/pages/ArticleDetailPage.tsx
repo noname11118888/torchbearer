@@ -5,14 +5,14 @@ import { useGetArticleById } from '../hooks/useQueries';
 import { ChevronLeft } from 'lucide-react';
 
 export default function ArticleDetailPage() {
-  const { id } = useParams({ from: '/article/$id' });
+  const { id } = useParams({ from: '/cam-nang-ruou-vang/$id' });
   const navigate = useNavigate();
   const articleId = id ? parseInt(id, 10) : null;
 
   const { data: article, isLoading, isError, error } = useGetArticleById(articleId);
 
   const handleGoBack = () => {
-    navigate({ to: '/article' });
+    navigate({ to: '/cam-nang-ruou-vang' });
   };
 
   const renderContent = (article: any) => {

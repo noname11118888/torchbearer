@@ -94,7 +94,7 @@ export default function CartPage() {
               <p className="text-foreground/70 mb-8">
                 Bạn chưa có sản phẩm nào trong giỏ hàng
               </p>
-              <Button onClick={() => navigate({ to: '/products' })}>
+              <Button onClick={() => navigate({ to: '/ruou-vang' })}>
                 Xem sản phẩm
               </Button>
             </div>
@@ -113,7 +113,7 @@ export default function CartPage() {
           <div className="mb-8">
             <Button
               variant="ghost"
-              onClick={() => navigate({ to: '/products' })}
+              onClick={() => navigate({ to: '/ruou-vang' })}
               className="mb-4"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
