@@ -76,11 +76,11 @@ const getYoutubeEmbed = (url: string): string | null => {
     
     if (url.includes("youtu.be")) {
       videoId = url.split("/").pop()?.split("?")[0] || null;
+    } else if (url.includes("youtube.com/embed/")) {
+      videoId = url.split("/embed/")[1]?.split("?")[0] || null;
     } else if (url.includes("youtube.com")) {
       const urlObj = new URL(url);
       videoId = urlObj.searchParams.get("v");
-    } else if (url.includes("youtube.com/embed/")) {
-      videoId = url.split("/embed/")[1]?.split("?")[0] || null;
     }
     
     if (!videoId) return null;
@@ -290,10 +290,12 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
             <iframe
               src={`${embedUrl.split('?')[0]}?${youtubeParams.toString()}`}
               title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
               onLoad={handleLoad}
               className={mediaClassName}
+              frameBorder="0"
             />
           );
         })()
