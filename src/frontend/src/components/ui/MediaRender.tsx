@@ -117,22 +117,17 @@ const useMediaType = (
     }
     
     const resolveType = async () => {
-      if (typeFromBackend) {
-        setType(typeFromBackend);
-        setLoading(false);
-        return;
-      }
-
-      if (cacheResults && typeCache.has(url)) {
-        setType(typeCache.get(url));
-        setLoading(false);
-        return;
-      }
-
+      // Ưu tiên detect từ URL trước để bắt kịp link YouTube/Video kể cả khi backend gửi type sai
       const quickType = detectTypeFromUrl(url);
       if (quickType !== "unknown") {
         setType(quickType);
         if (cacheResults) typeCache.set(url, quickType);
+        setLoading(false);
+        return;
+      }
+
+      if (typeFromBackend && typeFromBackend !== "unknown") {
+        setType(typeFromBackend);
         setLoading(false);
         return;
       }
@@ -191,7 +186,8 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
     cacheResults
   );
   
-  const isLoading = typeLoading || (!error && !mediaLoaded && type !== "unknown" && type !== "youtube");
+  const isYoutube = type === "youtube";
+  const isLoading = typeLoading || (!error && !mediaLoaded && type !== "unknown" && !isYoutube);
 
   useEffect(() => {
     if (type === "image" && !mediaLoaded) {
@@ -201,7 +197,11 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
         handleLoad();
       }
     }
-  }, [url, type, mediaLoaded]);
+    // Đối với YouTube, chúng ta coi như đã load xong type để tránh bị kẹt loading UI
+    if (isYoutube && !mediaLoaded) {
+      setMediaLoaded(true);
+    }
+  }, [url, type, mediaLoaded, isYoutube]);
 
   const handleLoad = () => {
     setMediaLoaded(true);
