@@ -156,14 +156,7 @@ const Hero = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Button
                   size="lg"
-                  className="text-lg px-8 py-6"
-                  onClick={scrollToAbout}
-                >
-                  Khám phá câu chuyện
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
+                  variant="hero"
                   className="text-lg px-8 py-6"
                   onClick={() => {
                     const productsSection = document.querySelector('#products');
@@ -172,7 +165,7 @@ const Hero = () => {
                     }
                   }}
                 >
-                  Xem sản phẩm
+                  Rượu vang - Người cầm đuốc
                 </Button>
               </div>
             </>
