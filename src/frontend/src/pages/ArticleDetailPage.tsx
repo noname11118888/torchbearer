@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import { useGetArticleById } from '../hooks/useQueries';
 import { ChevronLeft, Calendar, Clock, Share2, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import MediaRenderer from '../components/ui/MediaRender';
 
 export default function ArticleDetailPage() {
   const { id } = useParams({ from: '/cam-nang-ruou-vang/$id' });
@@ -35,71 +36,97 @@ export default function ArticleDetailPage() {
     }
 
     return article.content.map((item: any, index: number) => {
-      const elements: React.ReactNode[] = [];
+      const layoutType = item.mediaType || "1";
 
-      // Render Title/Heading
-      if (item.title) {
-        elements.push(
-          <h2 key={`${index}-title`} className="text-3xl font-bold text-foreground mt-12 mb-6 leading-tight first:mt-0">
-            {item.title}
-          </h2>
+      // Layout 1: Văn bản trên - Ảnh dưới (Default)
+      if (layoutType === "1") {
+        return (
+          <div key={index} className="mb-16 last:mb-0">
+            {item.title && <h2 className="text-3xl font-bold text-foreground mb-6 leading-tight">{item.title}</h2>}
+            {item.description && <p className="text-lg text-foreground/80 leading-[1.8] mb-8 whitespace-pre-wrap">{item.description}</p>}
+            {item.mediaUrl && (
+              <figure className="group">
+                <div className="relative rounded-2xl overflow-hidden shadow-lg transition-all duration-500 group-hover:shadow-2xl">
+                  <MediaRenderer 
+                    url={item.mediaUrl} 
+                    alt={item.title || 'Article content'}
+                    className="w-full aspect-video md:aspect-[21/9] transition-transform duration-700 group-hover:scale-[1.02]"
+                  />
+                </div>
+              </figure>
+            )}
+          </div>
         );
       }
 
-      // Render Media (Image/Video)
-      if (item.mediaUrl) {
-        const isVideo = item.mediaType && (item.mediaType.toLowerCase().includes('video') || item.mediaUrl.endsWith('.mp4'));
-
-        if (isVideo) {
-          elements.push(
-            <div key={`${index}-video`} className="my-10 group">
-              <div className="relative rounded-2xl overflow-hidden bg-black shadow-xl">
-                <video
-                  src={item.mediaUrl}
-                  controls
-                  className="w-full max-h-[600px]"
-                  loading="lazy"
+      // Layout 2: Ảnh trái - Văn bản phải
+      if (layoutType === "2") {
+        return (
+          <div key={index} className="mb-16 flex flex-col md:flex-row gap-8 items-center last:mb-0">
+            <div className="w-full md:w-1/2 group">
+              <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-square md:aspect-[4/3]">
+                <MediaRenderer 
+                  url={item.mediaUrl} 
+                  alt={item.title || 'Article content'}
+                  className="transition-transform duration-700 group-hover:scale-110"
                 />
               </div>
+            </div>
+            <div className="w-full md:w-1/2">
+              {item.title && <h3 className="text-2xl font-bold text-foreground mb-4 leading-tight">{item.title}</h3>}
+              {item.description && <p className="text-lg text-foreground/80 leading-[1.7] whitespace-pre-wrap">{item.description}</p>}
+            </div>
+          </div>
+        );
+      }
+
+      // Layout 3: Văn bản trái - Ảnh phải
+      if (layoutType === "3") {
+        return (
+          <div key={index} className="mb-16 flex flex-col md:flex-row-reverse gap-8 items-center last:mb-0">
+            <div className="w-full md:w-1/2 group">
+              <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-square md:aspect-[4/3]">
+                <MediaRenderer 
+                  url={item.mediaUrl} 
+                  alt={item.title || 'Article content'}
+                  className="transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+            </div>
+            <div className="w-full md:w-1/2">
+              {item.title && <h3 className="text-2xl font-bold text-foreground mb-4 leading-tight">{item.title}</h3>}
+              {item.description && <p className="text-lg text-foreground/80 leading-[1.7] whitespace-pre-wrap">{item.description}</p>}
+            </div>
+          </div>
+        );
+      }
+
+      // Layout 4 & 5: Toàn màn hình với Overlay (Dành cho các đoạn nhấn mạnh)
+      if (layoutType === "4" || layoutType === "5") {
+        return (
+          <div key={index} className="mb-16 relative w-full h-[500px] md:h-[600px] rounded-3xl overflow-hidden group last:mb-0 shadow-2xl">
+            <div className="absolute inset-0">
+              <MediaRenderer 
+                url={item.mediaUrl} 
+                alt={item.title || 'Background'}
+                className="transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+            </div>
+            <div className={`absolute inset-0 p-8 md:p-16 flex flex-col ${layoutType === "5" ? "justify-end items-center text-center" : "justify-end items-start"}`}>
+              {item.title && <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg leading-tight">{item.title}</h2>}
               {item.description && (
-                <p className="text-sm text-foreground/50 mt-4 text-center italic">
+                <p className={`text-lg md:text-xl text-white/90 leading-relaxed max-w-2xl drop-shadow-md ${layoutType === "5" ? "mx-auto" : ""}`}>
                   {item.description}
                 </p>
               )}
             </div>
-          );
-        } else {
-          elements.push(
-            <figure key={`${index}-image`} className="my-10 group">
-              <div className="relative rounded-2xl overflow-hidden shadow-lg transition-shadow hover:shadow-2xl">
-                <img
-                  src={item.mediaUrl}
-                  alt={item.title || 'Article content'}
-                  className="w-full object-cover max-h-[600px] transition-transform duration-500 group-hover:scale-[1.02]"
-                  loading="lazy"
-                />
-              </div>
-              {item.description && (
-                <figcaption className="text-sm text-foreground/50 mt-4 text-center italic">
-                  — {item.description}
-                </figcaption>
-              )}
-            </figure>
-          );
-        }
-      } 
-      
-      // Render Description/Paragraph
-      if (item.description && !item.mediaUrl) {
-        elements.push(
-          <p key={`${index}-text`} className="text-lg text-foreground/80 leading-[1.8] mb-6 whitespace-pre-wrap font-serif">
-            {item.description}
-          </p>
+          </div>
         );
       }
 
-      return elements.length > 0 ? elements : null;
-    }).flat();
+      return null;
+    });
   };
 
   return (
