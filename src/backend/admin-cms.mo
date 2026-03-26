@@ -35,7 +35,7 @@ module {
       header = {
         title = "Torch Bearer Tasmania";
         content = "Trải nghiệm hương vị độc đáo của rượu vang bản địa Việt Nam";
-        mediaUrl = "logo.webp";
+        mediaUrl = "logo.png";
       };
       footer = {
         copyright = "© 2024 Rượu Vang Việt. All rights reserved.";
@@ -109,7 +109,7 @@ module {
     {
       title = "Torch Bearer Tasmania";
       content = "Trải nghiệm hương vị độc đáo của rượu vang bản địa Việt Nam";
-      mediaUrl = "logo.webp";
+      mediaUrl = "logo.png";
     };
   };
 

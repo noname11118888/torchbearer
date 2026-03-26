@@ -151,7 +151,7 @@ export default function ArticleDetailPage() {
           <div className="max-w-3xl mx-auto mb-12">
             <button
               onClick={handleGoBack}
-              className="group inline-flex items-center gap-2 text-foreground/60 hover:text-primary transition-colors text-sm font-medium"
+              className="group inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm font-medium"
             >
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               Cẩm nang rượu vang
