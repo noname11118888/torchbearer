@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -7,70 +6,19 @@ import MediaRenderer from './ui/MediaRender';
 
 const Hero = () => {
   const { data: heroData, isLoading } = useGetHeroSection();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Default slideshow images
-  const defaultImages = [
-    '/assets/720.mp4'
-  ];
-
-  // Get images from backend or use defaults
-  const heroImages = heroData?.mediaUrl 
-    ? [
-        heroData.mediaUrl.startsWith('http') 
-          ? heroData.mediaUrl 
-          : `/assets/${heroData.mediaUrl}`
-      ]
-    : defaultImages;
-
-  const slideshowTiming = 5000;
+  // Media configuration: Priority backend > Default video
+  const mediaUrl = heroData?.mediaUrl 
+    ? (heroData.mediaUrl.startsWith('http') ? heroData.mediaUrl : `/assets/${heroData.mediaUrl}`)
+    : '/assets/720.mp4';
 
   const title = heroData?.title || 'Mind - Purpose - Benevolence';
   const content = heroData?.content || '#xlife #torchbearer #Tmoment #người cầm đuốc';
 
-  useEffect(() => {
-    if (heroImages.length <= 1 || isPaused) return;
-
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, slideshowTiming);
-
-    return () => clearInterval(interval);
-  }, [heroImages.length, isPaused, slideshowTiming]);
-
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }
-    if (isRightSwipe) {
-      setCurrentImageIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length);
-    }
-  };
-
-  const scrollToAbout = () => {
-    const aboutSection = document.querySelector('#about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSection = (id: string) => {
+    const section = document.querySelector(id);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -78,75 +26,66 @@ const Hero = () => {
     <section 
       id="hero" 
       className="relative h-screen flex items-center justify-center overflow-hidden"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
     >
-
+      {/* Background Media Layer */}
       <div className="absolute inset-0 z-0">
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
           <>
-            {heroImages.map((mediaUrl, index) => (
-              <div
-                key={index}
-                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
-                  index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <MediaRenderer
-                  url={mediaUrl}
-                  className="w-full h-full"
-                  objectFit="cover"
-                  autoPlay={true}
-                  muted={true}
-                  loop={true}
-                  controls={false}
-                  playsInline={true}
-                />
-              </div>
-            ))}
-            <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background/80" />
+            <div className="absolute inset-0 w-full h-full">
+              <MediaRenderer
+                url={mediaUrl}
+                className="w-full h-full"
+                objectFit="cover"
+                autoPlay={true}
+                muted={true}
+                loop={true}
+                controls={false}
+                playsInline={true}
+              />
+            </div>
+            {/* Dark overlay for readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
           </>
         )}
       </div>
 
+      {/* Content Layer */}
       <div className="relative z-10 container mx-auto px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+        <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
           {isLoading ? (
-            <>
-              <Skeleton className="h-16 w-3/4 mx-auto" />
-              <Skeleton className="h-8 w-2/3 mx-auto" />
-              <Skeleton className="h-8 w-1/2 mx-auto" />
-              <div className="flex gap-4 justify-center pt-4">
-                <Skeleton className="h-12 w-48" />
-                <Skeleton className="h-12 w-48" />
+            <div className="space-y-6">
+              <Skeleton className="h-16 w-3/4 mx-auto bg-white/10" />
+              <Skeleton className="h-10 w-2/3 mx-auto bg-white/10" />
+              <div className="flex gap-4 justify-center pt-6">
+                <Skeleton className="h-14 w-56 bg-white/10" />
               </div>
-            </>
+            </div>
           ) : (
             <>
-              <h1 className="text-5xl md:text-5xl font-bold text-foreground leading-tight">
+              <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight drop-shadow-2xl">
                 {title}
               </h1>
-              <p className="text-xl md:text-2xl text-accent font-semibold max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-primary font-semibold max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
                 {content}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
                 <Button
                   size="lg"
-                  variant="hero"
-                  className="text-lg px-8 py-6"
-                  onClick={() => {
-                    const productsSection = document.querySelector('#products');
-                    if (productsSection) {
-                      productsSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
+                  variant="outline"
+                  className="text-lg px-10 py-7 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 font-bold rounded-full"
+                  onClick={() => scrollToSection('#products')}
                 >
-                  Rượu vang - Người cầm đuốc
+                  Khám phá Rượu vang
+                </Button>
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="text-lg px-10 py-7 text-white hover:bg-white/10 transition-all duration-300 font-medium rounded-full"
+                  onClick={() => scrollToSection('#torch-bearer')}
+                >
+                  Về chúng tôi
                 </Button>
               </div>
             </>
@@ -154,30 +93,17 @@ const Hero = () => {
         </div>
       </div>
 
-      {!isLoading && heroImages.length > 1 && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-          {heroImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentImageIndex 
-                  ? 'bg-primary w-8' 
-                  : 'bg-primary/30 hover:bg-primary/50'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
-
+      {/* Scroll Indicator */}
       {!isLoading && (
         <button
-          onClick={scrollToAbout}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce"
+          onClick={() => scrollToSection('#torch-bearer')}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 transition-transform hover:scale-110 active:scale-95 group"
           aria-label="Scroll down"
         >
-          <ArrowDown className="h-8 w-8 text-primary" />
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-white/40 text-xs font-medium uppercase tracking-widest group-hover:text-primary transition-colors">Cuộn xuống</span>
+            <ArrowDown className="h-6 w-6 text-primary animate-bounce" />
+          </div>
         </button>
       )}
     </section>

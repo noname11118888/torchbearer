@@ -49,7 +49,7 @@ export default function AdminDashboard() {
               <img
                 src="/assets/logo.png"
                 alt="Logo"
-                // className="h-10 w-10"
+                className="h-12 w-auto object-contain"
               />
               <div>
                 <h1 className="text-xl font-bold text-foreground">Admin CMS</h1>
