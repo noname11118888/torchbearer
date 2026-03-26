@@ -151,7 +151,7 @@ export default function AdminPage() {
           <div className="bg-card p-8 rounded-lg shadow-xl text-center space-y-6">
             <div className="flex justify-center">
               <img
-                src="/assets/logo.webp"
+                src="/assets/logo.png"
                 alt="Logo"
                 // className="h-20 w-20"
               />

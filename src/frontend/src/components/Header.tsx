@@ -48,9 +48,10 @@ const Header = () => {
     }
   };
 
-  const logoUrl = headerData?.mediaUrl 
-    ? `/assets/${headerData.mediaUrl}`
-    : '/assets/logo.webp';
+  // const logoUrl = headerData?.mediaUrl 
+  //   ? `/assets/${headerData.mediaUrl}`
+  //   : '/assets/logo.png';
+  const logoUrl = '/assets/logo.png';
 
   const brandName = headerData?.title || 'Torch Bearer Tasmania';
 
@@ -75,8 +76,7 @@ const Header = () => {
               <img
                 src={logoUrl}
                 alt={brandName}
-                // className="h-12 w-12 transition-transform group-hover:scale-110"
-                className="transition-transform group-hover:scale-110"
+                className="h-[7.5rem] w-auto object-contain transition-transform group-hover:scale-105"
               />
             )}
             {/* <span className="text-2xl font-bold text-primary">
@@ -89,7 +89,7 @@ const Header = () => {
               <button
                 key={item.label}
                 onClick={() => handleNavigation(item.href, item.isRoute)}
-                className="text-[#D4AF37] hover:text-[#E5B53B] transition-colors font-medium"
+                className="text-white hover:text-white/80 transition-colors font-medium"
               >
                 {item.label}
               </button>
@@ -97,7 +97,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-[#D4AF37] hover:text-[#E5B53B]"
+              className="relative text-white hover:text-white/80"
               onClick={() => navigate({ to: '/user' })}
             >
               <User className={`h-5 w-5 ${identity ? 'text-primary fill-primary/20' : ''}`} />
@@ -105,7 +105,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-[#D4AF37] hover:text-[#E5B53B]"
+              className="relative text-white hover:text-white/80"
               onClick={() => navigate({ to: '/cart' })}
             >
               <ShoppingCart className="h-5 w-5" />
