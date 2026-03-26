@@ -79,14 +79,6 @@ const Hero = () => {
                 >
                   Khám phá Rượu vang
                 </Button>
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  className="text-lg px-10 py-7 text-white hover:bg-white/10 transition-all duration-300 font-medium rounded-full"
-                  onClick={() => scrollToSection('#torch-bearer')}
-                >
-                  Về chúng tôi
-                </Button>
               </div>
             </>
           )}
@@ -101,7 +93,6 @@ const Hero = () => {
           aria-label="Scroll down"
         >
           <div className="flex flex-col items-center gap-2">
-            <span className="text-white/40 text-xs font-medium uppercase tracking-widest group-hover:text-primary transition-colors">Cuộn xuống</span>
             <ArrowDown className="h-6 w-6 text-primary animate-bounce" />
           </div>
         </button>
