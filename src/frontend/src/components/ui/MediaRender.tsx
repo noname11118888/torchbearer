@@ -10,7 +10,11 @@ interface MediaRendererProps {
   cacheResults?: boolean;
   lazyLoad?: boolean;
   autoPlay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+  playsInline?: boolean;
   controls?: boolean;
+  objectFit?: "cover" | "contain";
   alt?: string;
   onLoad?: () => void;
   onError?: (error: Error) => void;
@@ -72,11 +76,11 @@ const getYoutubeEmbed = (url: string): string | null => {
     
     if (url.includes("youtu.be")) {
       videoId = url.split("/").pop()?.split("?")[0] || null;
+    } else if (url.includes("youtube.com/embed/")) {
+      videoId = url.split("/embed/")[1]?.split("?")[0] || null;
     } else if (url.includes("youtube.com")) {
       const urlObj = new URL(url);
       videoId = urlObj.searchParams.get("v");
-    } else if (url.includes("youtube.com/embed/")) {
-      videoId = url.split("/embed/")[1]?.split("?")[0] || null;
     }
     
     if (!videoId) return null;
@@ -113,22 +117,17 @@ const useMediaType = (
     }
     
     const resolveType = async () => {
-      if (typeFromBackend) {
-        setType(typeFromBackend);
-        setLoading(false);
-        return;
-      }
-
-      if (cacheResults && typeCache.has(url)) {
-        setType(typeCache.get(url));
-        setLoading(false);
-        return;
-      }
-
+      // Ưu tiên detect từ URL trước để bắt kịp link YouTube/Video kể cả khi backend gửi type sai
       const quickType = detectTypeFromUrl(url);
       if (quickType !== "unknown") {
         setType(quickType);
         if (cacheResults) typeCache.set(url, quickType);
+        setLoading(false);
+        return;
+      }
+
+      if (typeFromBackend && typeFromBackend !== "unknown") {
+        setType(typeFromBackend);
         setLoading(false);
         return;
       }
@@ -168,7 +167,11 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
   cacheResults = true,
   lazyLoad = true,
   autoPlay = false,
+  muted = false,
+  loop = false,
   controls = true,
+  playsInline = true,
+  objectFit = "cover",
   alt = "Media content",
   onLoad,
   onError,
@@ -183,7 +186,22 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
     cacheResults
   );
   
-  const isLoading = typeLoading || (!error && !mediaLoaded && type !== "unknown");
+  const isYoutube = type === "youtube";
+  const isLoading = typeLoading || (!error && !mediaLoaded && type !== "unknown" && !isYoutube);
+
+  useEffect(() => {
+    if (type === "image" && !mediaLoaded) {
+      const img = new Image();
+      img.src = url;
+      if (img.complete) {
+        handleLoad();
+      }
+    }
+    // Đối với YouTube, chúng ta coi như đã load xong type để tránh bị kẹt loading UI
+    if (isYoutube && !mediaLoaded) {
+      setMediaLoaded(true);
+    }
+  }, [url, type, mediaLoaded, isYoutube]);
 
   const handleLoad = () => {
     setMediaLoaded(true);
@@ -200,41 +218,29 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
     <div 
       role="status"
       aria-label="Loading media"
-      className={`animate-pulse bg-gray-200 w-full h-64 rounded-2xl ${className}`}
+      className={`animate-pulse bg-muted w-full h-full flex items-center justify-center ${className}`}
     >
-      <span className="sr-only">Loading...</span>
+      <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   const renderError = () => (
     <div 
       role="alert"
-      className="w-full h-64 flex items-center justify-center bg-gray-100 rounded-2xl text-gray-500"
+      className={`w-full h-full flex items-center justify-center bg-muted text-muted-foreground ${className}`}
     >
-      <div className="text-center">
-        <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <p>Unable to load media</p>
-        <button
-          onClick={() => {
-            setError(false);
-            setMediaLoaded(false);
-          }}
-          className="mt-2 text-sm text-blue-500 hover:text-blue-700"
-        >
-          Retry
-        </button>
+      <div className="text-center p-4">
+        <p className="text-xs">Không thể tải nội dung</p>
       </div>
     </div>
   );
 
   if (!url) return null;
 
-  const mediaClassName = `w-full rounded-2xl ${isLoading ? "hidden" : "block"} ${className}`;
+  const mediaClassName = `${objectFit === "cover" ? "object-cover" : "object-contain"} ${isLoading ? "hidden" : "block"} ${className}`;
 
   return (
-    <div className="relative w-full" role="figure" aria-label="Media renderer">
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden" role="figure" aria-label="Media renderer">
       {isLoading && renderSkeleton()}
       
       {!error && type === "image" && (
@@ -243,8 +249,9 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
           alt={alt}
           loading={lazyLoad ? "lazy" : "eager"}
           onLoad={handleLoad}
+          onLoadedData={handleLoad}
           onError={handleError}
-          className={mediaClassName}
+          className={`w-full h-full ${mediaClassName}`}
         />
       )}
       
@@ -253,10 +260,15 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
           src={url}
           controls={controls}
           autoPlay={autoPlay}
-          preload="metadata"
+          muted={muted}
+          loop={loop}
+          playsInline={playsInline}
+          preload="auto"
           onLoadedData={handleLoad}
+          onCanPlay={handleLoad}
+          onCanPlayThrough={handleLoad}
           onError={handleError}
-          className={mediaClassName}
+          className={`w-full h-full ${mediaClassName}`}
         />
       )}
       
@@ -264,14 +276,26 @@ const MediaRenderer: React.FC<MediaRendererProps> = ({
         (() => {
           const embedUrl = getYoutubeEmbed(url);
           if (!embedUrl) return renderError();
+          
+          const youtubeParams = new URLSearchParams({
+            autoplay: autoPlay ? "1" : "0",
+            mute: muted ? "1" : "0",
+            loop: loop ? "1" : "0",
+            controls: controls ? "1" : "0",
+            modestbranding: "1",
+            rel: "0",
+          });
+
           return (
             <iframe
-              src={embedUrl}
+              src={`${embedUrl.split('?')[0]}?${youtubeParams.toString()}`}
               title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
               onLoad={handleLoad}
               className={mediaClassName}
+              frameBorder="0"
             />
           );
         })()

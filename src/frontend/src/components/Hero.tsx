@@ -3,6 +3,7 @@ import { ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetHeroSection } from '../hooks/useQueries';
+import MediaRenderer from './ui/MediaRender';
 
 const Hero = () => {
   const { data: heroData, isLoading } = useGetHeroSection();
@@ -11,7 +12,7 @@ const Hero = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Default slideshow images - will be replaced by backend data when available
+  // Default slideshow images
   const defaultImages = [
     '/assets/720.mp4'
   ];
@@ -25,14 +26,11 @@ const Hero = () => {
       ]
     : defaultImages;
 
-    // const heroImages = defaultImages;
-
-  const slideshowTiming = 5000; // 5 seconds between transitions
+  const slideshowTiming = 5000;
 
   const title = heroData?.title || 'Mind - Purpose - Benevolence';
   const content = heroData?.content || '#xlife #torchbearer #Tmoment #người cầm đuốc';
 
-  // Auto-advance slideshow
   useEffect(() => {
     if (heroImages.length <= 1 || isPaused) return;
 
@@ -43,7 +41,6 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [heroImages.length, isPaused, slideshowTiming]);
 
-  // Touch handlers for mobile swipe
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -77,12 +74,6 @@ const Hero = () => {
     }
   };
 
-  const isVideoFile = (url: string) => {
-    if (!url) return false;
-    const videoExtensions = ['.mp4', '.webm', '.mov', '.ogg'];
-    return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
-  };
-
   return (
     <section 
       id="hero" 
@@ -94,40 +85,30 @@ const Hero = () => {
       onTouchEnd={onTouchEnd}
     >
 
-    <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
           <>
-            {/* Updated media rendering with video support */}
-            {heroImages.map((mediaUrl, index) => {
-              const isVideo = isVideoFile(mediaUrl);
-              
-              return isVideo ? (
-                <video
-                  key={index}
-                  src={mediaUrl}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
+            {heroImages.map((mediaUrl, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
+                  index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                <MediaRenderer
+                  url={mediaUrl}
+                  className="w-full h-full"
+                  objectFit="cover"
+                  autoPlay={true}
+                  muted={true}
+                  loop={true}
+                  controls={false}
+                  playsInline={true}
                 />
-              ) : (
-                <img
-                  key={index}
-                  src={mediaUrl}
-                  alt={`Vineyard landscape ${index + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                />
-              );
-            })}
+              </div>
+            ))}
             <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background/80" />
           </>
         )}
@@ -173,7 +154,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Slideshow indicators */}
       {!isLoading && heroImages.length > 1 && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 flex gap-2">
           {heroImages.map((_, index) => (
