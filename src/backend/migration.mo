@@ -10,308 +10,6 @@ import Old "object/old_types";
 
 
 module {
-  
-  // public type OldIconLink = {
-  //   id : Nat;
-  //   icon : Text;
-  //   link : Text;
-  // };
-
-  // public type OldMediaItem = {
-  //   id : Nat;
-  //   url : Text;
-  //   caption : Text;
-  //   description : Text;
-  //   uploadTimestamp : Int;
-  //   mediaType : Text;
-  // };
-
-  // public type OldCategory = {
-  //   id : Nat;
-  //   name : Text;
-  // };
-
-  // public type OldTastingNote = {
-  //   name : Text;
-  //   imageUrl : Text;
-  //   description : Text;
-  // };
-
-  // public type OldPairingFood = {
-  //   name : Text;
-  //   imageUrl : Text;
-  //   description : Text;
-  // };
-
-  // public type OldFlavorProfile = {
-  //   name : Text;
-  //   value : Float;
-  // };
-
-  // public type OldProductInfo = {
-  //   name : Text;
-  //   value : Text;
-  // };
-
-  // public type OldProduct = {
-  //   id : Nat;
-  //   name : Text;
-  //   description : Text;
-  //   imageUrl : Text;
-  //   price : Nat;
-  //   categories : [OldCategory];
-  //   tasting : [OldTastingNote];
-  //   paring : [OldPairingFood];
-  //   profile : [OldFlavorProfile];
-  //   info : [OldProductInfo];
-  //   isHighlighted : Bool;
-  //   classificationTag : OldProductInfo;
-  // };
-
-  // public type OldCartItem = {
-  //   product : OldProduct;
-  //   quantity : Nat;
-  // };
-
-  // public type OldOrderItem = {
-  //   product : OldProduct;
-  //   quantity : Nat;
-  //   totalPrice : Nat;
-  // };
-
-  // public type OldOrder = {
-  //   id : Nat;
-  //   customerName : Text;
-  //   customerEmail : Text;
-  //   customerPhone : Text;
-  //   items : [OldOrderItem];
-  //   totalAmount : Nat;
-  //   timestamp : Int;
-  //   status : OldOrderStatus;
-  // };
-
-  // public type OldOrderStatus = {
-  //   #pending;
-  //   #completed;
-  //   #cancelled;
-  // };
-
-  // public type OldContactLocation = {
-  //   id : Nat;
-  //   name : Text;
-  //   address : Text;
-  //   phone : Text;
-  //   email : Text;
-  //   mapUrl : Text;
-  //   isHeadOffice : Bool;
-  // };
-
-  // public type OldUserProfile = {
-  //   id : Nat;
-  //   name : Text;
-  //   principal : Text;
-  //   email : Text;
-  //   role : Text;
-  // };
-
-  // public type OldFloatingBubbleConfig = {
-  //   backgroundColor : Text;
-  //   icon : Text;
-  //   hotlineNumberOverride : Text;
-  //   isEnabled : Bool;
-  // };
-
-  // // public type ProcessStep = {
-  // //   stepTitle : Text;
-  // //   description : Text;
-  // //   mediaUrl : Text;
-  // // };
-
-  // public type OldTeamMember = {
-  //   id : Nat;
-  //   name : Text;
-  //   role : Text;
-  //   imageUrl : Text;
-  //   bio : Text;
-  // };
-
-  // public type OldCustomerMessage = {
-  //   id : Nat;
-  //   name : Text;
-  //   email : Text;
-  //   phone : Text;
-  //   message : Text;
-  //   timestamp : Int;
-  // };
-
-  // public type OldAboutMediaSection = {
-  //   title : Text;
-  //   description : Text;
-  //   mediaUrl : Text;
-  //   mediaType : Text;
-  // };
-
-  // public type OldAboutSection = {
-  //   introductoryHeading : Text;
-  //   mainDescription : Text;
-  //   mediaSections : [OldAboutMediaSection];
-  //   // processSteps : [ProcessStep];
-  //   // teamMembers : [TeamMember];
-  // };
-
-  // public type OldContentSection = {
-  //   title : Text;
-  //   content : Text;
-  //   mediaUrl : Text;
-  // };
-
-  // public type OldFooterData = {
-  //   copyright : Text;
-  //   links : [Text];
-  //   socialMedia : [Text];
-  // };
-
-  // public type OldSerializableAdminCMSData = {
-  //   header : OldContentSection;
-  //   footer : OldFooterData;
-  //   iconLinks : [OldIconLink];
-  //   heroSection : OldContentSection;
-  //   aboutSection : OldContentSection;
-  //   products : [OldProduct];
-  //   // processSteps : [ProcessStep];
-  //   teamMembers : [OldTeamMember];
-  //   media : [OldMediaContent];
-  //   contacts : [OldContactLocation];
-  //   floatingBubbleConfig : OldFloatingBubbleConfig;
-  // };
-  
-
-  // public type OldAdminCMSData = {
-  //   header : OldContentSection;
-  //   footer : OldFooterData;
-  //   iconLinks : [OldIconLink];
-  //   heroSection : OldContentSection;
-  //   aboutSection : OldContentSection;
-  //   products : Map.Map<Nat, OldProduct>;
-  //   // processSteps : [ProcessStep];
-  //   teamMembers : [OldTeamMember];
-  //   contacts : [OldContactLocation];
-  //   media : [OldMediaContent];
-  // };
-
-  // public type OldAdminEntry = {
-  //   principalId : Text;
-  // };
-
-  // public type OldMediaContent = {
-  //   url : Text;
-  //   mediaType : Text;
-  // };
-
-  // // type OldSerializableAdminCMSData = {
-  // //   header : OldContentSection;
-  // //   footer : OldFooterData;
-  // //   iconLinks : [OldIconLink];
-  // //   heroSection : OldContentSection;
-  // //   aboutSection : OldContentSection;
-  // //   products : [(Text, OldProduct)];
-  // //   processSteps : [OldProcessStep];
-  // //   teamMembers : [OldTeamMember];
-  // //   media : [AdminCMS.MediaContent];
-  // //   contacts : [OldContactLocation];
-  // //   floatingBubbleConfig : OldFloatingBubbleConfig;
-  // // };
-
-  // // type OldAdminEntry = {
-  // //   principalId : Text;
-  // // };
-
-  // type NewActor = {
-  //   nextMessageId : Nat;
-  //   nextMediaId : Nat;
-  //   nextOrderId : Nat;
-  //   nextProductId : Nat;
-  //   nextCategoryId : Nat;
-  //   nextContactId : Nat;
-  //   nextUserId : Nat;
-  //   nextTeamMemberId : Nat;
-  //   nextIconLinkId : Nat;
-  //   nextArticleId: Nat;
-
-  //   showProductPrices : Bool;
-    
-  //   userProfiles : Map.Map<Principal, T.UserProfile>;
-  //   categories : Map.Map<Nat, T.Category>;
-  //   products : Map.Map<Nat, T.Product>;
-  //   orders : Map.Map<Nat, T.Order>;
-  //   customerMessages : Map.Map<Nat, T.CustomerMessage>;
-  //   mediaItems : Map.Map<Nat, T.MediaItem>;
-  //   contentSections : Map.Map<Text, T.ContentSection>;
-  //   iconLinks : Map.Map<Nat, T.IconLink>;
-
-  //   floatingBubbleConfig : T.FloatingBubbleConfig;
-  //   footerData : T.FooterData;
-  //   aboutSection : T.AboutSection;
-
-  //   articles : Map.Map<Nat, T.Article>;
-  //   userOrders : Map.Map<Principal, T.OrderList>;
-
-  //   teams : Map.Map<Nat, T.TeamMember>;
-  //   contacts : Map.Map<Nat, T.ContactLocation>;
-  // };
-
-  // public type OldOrderList = {
-  //   id : [Nat];
-  // };
-
-  // public type OldArticle = {
-  //   id : Nat;
-  //   title : Text;
-  //   publishTime : Int;
-  //   updateTime : Int;
-  //   content : [OldArticleContent];
-  // };
-
-  // public type OldArticleContent = {
-  //   title : Text;
-  //   description : Text;
-  //   mediaUrl : Text;
-  //   mediaType : Text;
-  // };
-
-  // type OldActor = {
-  //   nextMessageId : Nat;
-  //   nextMediaId : Nat;
-  //   nextOrderId : Nat;
-  //   nextProductId : Nat;
-  //   nextCategoryId : Nat;
-  //   nextContactId : Nat;
-  //   nextUserId : Nat;
-  //   nextTeamMemberId : Nat;
-  //   nextIconLinkId : Nat;
-  //   nextArticleId: Nat;
-
-  //   showProductPrices : Bool;
-    
-  //   userProfiles : Map.Map<Principal, OldUserProfile>;
-  //   categories : Map.Map<Nat, OldCategory>;
-  //   products : Map.Map<Nat, OldProduct>;
-  //   orders : Map.Map<Nat, OldOrder>;
-  //   customerMessages : Map.Map<Nat, OldCustomerMessage>;
-  //   mediaItems : Map.Map<Nat, OldMediaItem>;
-  //   contentSections : Map.Map<Text, OldContentSection>;
-  //   iconLinks : Map.Map<Nat, OldIconLink>;
-
-  //   floatingBubbleConfig : OldFloatingBubbleConfig;
-  //   footerData : OldFooterData;
-  //   aboutSection : OldAboutSection;
-
-  //   articles : Map.Map<Nat, OldArticle>;
-  //   userOrders : Map.Map<Principal, OldOrderList>;
-
-  //   teams : Map.Map<Nat, OldTeamMember>;
-  //   contacts : Map.Map<Nat, OldContactLocation>;
-  // };
 
   public func run(old : Old.Actor) : New.Actor {
 
@@ -328,17 +26,39 @@ module {
       nextArticleId = old.nextArticleId;
 
       showProductPrices = old.showProductPrices;
-      userProfiles = old.userProfiles; // Assuming no changes needed
-      categories = old.categories; // Assuming no changes needed
-      products = old.products; // Assuming no changes needed
+      // userProfiles = old.userProfiles; // Assuming no changes needed
+      userProfiles = Map.map<Principal, Old.UserProfile, New.UserProfile>(old.userProfiles, func (k : Principal, x1 : Old.UserProfile) : New.UserProfile {
+        x1
+      });
+      // categories = old.categories; // Assuming no changes needed
+      categories = Map.map<Nat, Old.Category, New.Category>(old.categories, func (k : Nat, x1 : Old.Category) : New.Category {
+        x1
+      });
+      // products = old.products; // Assuming no changes needed
+      products = Map.map<Nat, Old.Product, New.Product>(old.products, func (k : Nat, x1 : Old.Product) : New.Product {
+        x1
+      });
       // orders = old.orders; // Assuming no changes needed
       orders = Map.map<Nat, Old.Order, New.Order>(old.orders, func (k : Nat, x1 : Old.Order) : New.Order {
         x1
       });
-      customerMessages = old.customerMessages; // Assuming no changes needed
-      mediaItems = old.mediaItems; // Assuming no changes needed
-      contentSections = old.contentSections; // Assuming no changes needed
-      iconLinks = old.iconLinks; // Assuming no changes needed
+      // customerMessages = old.customerMessages; // Assuming no changes needed
+      customerMessages = Map.map<Nat, Old.CustomerMessage, New.CustomerMessage>(old.customerMessages, func (k : Nat, x1 : Old.CustomerMessage) : New.CustomerMessage {
+        x1
+      });
+      // mediaItems = old.mediaItems; // Assuming no changes needed
+      mediaItems = Map.map<Nat, Old.MediaItem, New.MediaItem>(old.mediaItems, func (k : Nat, x1 : Old.MediaItem) : New.MediaItem {
+        x1
+      });
+      // contentSections = old.contentSections; // Assuming no changes needed
+      contentSections = Map.map<Text, Old.ContentSection, New.ContentSection>(old.contentSections, func (k : Text, x1 : Old.ContentSection) : New.ContentSection {
+        x1
+      });
+      // iconLinks = old.iconLinks; // Assuming no changes needed
+      iconLinks = Map.map<Nat, Old.IconLink, New.IconLink>(old.iconLinks, func (k : Nat, x1 : Old.IconLink) : New.IconLink {
+        x1
+      });
+
       floatingBubbleConfig = {
         backgroundColor = old.floatingBubbleConfig.backgroundColor;
         icon = old.floatingBubbleConfig.icon;
@@ -350,14 +70,24 @@ module {
         introductoryHeading = old.aboutSection.introductoryHeading;
         mainDescription = old.aboutSection.mainDescription;
         mediaSections = old.aboutSection.mediaSections;
-        // processSteps = []; // Assuming empty for migration
-        // teamMembers = []; // Assuming empty for migration
       };
 
-      articles = old.articles;
-      userOrders = old.userOrders;
-      teams = old.teams;
-      contacts = old.contacts;
+      // articles = old.articles;
+      articles = Map.map<Nat, Old.Article, New.Article>(old.articles, func (k : Nat, x1 : Old.Article) : New.Article {
+        x1
+      });
+      // userOrders = old.userOrders;
+      userOrders = Map.map<Principal, Old.OrderList, New.OrderList>(old.userOrders, func (k : Principal, x1 : Old.OrderList) : New.OrderList {
+        x1
+      });
+      // teams = old.teams;
+      teams = Map.map<Nat, Old.TeamMember, New.TeamMember>(old.teams, func (k : Nat, x1 : Old.TeamMember) : New.TeamMember {
+        x1
+      });
+      // contacts = old.contacts;
+      contacts = Map.map<Nat, Old.ContactLocation, New.ContactLocation>(old.contacts, func (k : Nat, x1 : Old.ContactLocation) : New.ContactLocation {
+        x1
+      });
     };
   };
 };
