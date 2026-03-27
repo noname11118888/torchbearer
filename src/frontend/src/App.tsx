@@ -58,7 +58,7 @@ const productRoute = createRoute({
 
 const contactRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/lien-he',
+  path: '/mua-o-dau',
   component: ContactPage,
 });
 
