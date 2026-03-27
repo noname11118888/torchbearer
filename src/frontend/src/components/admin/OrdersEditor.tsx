@@ -231,6 +231,12 @@ export default function OrdersEditor() {
                   <p className="mt-1">{Number(selectedOrder.totalAmount).toLocaleString('vi-VN')}</p>
                 </div>
                 <div>
+                  <Label className="text-sm font-semibold">Ghi chú từ khách hàng</Label>
+                  <div className="mt-1 p-3 bg-muted rounded-md text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">
+                    {selectedOrder.note || 'Không có ghi chú'}
+                  </div>
+                </div>
+                <div>
                   <Label className="text-sm font-semibold">Thời gian gửi</Label>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {formatDate(selectedOrder.timestamp as unknown as bigint)}

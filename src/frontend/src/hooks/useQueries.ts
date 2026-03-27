@@ -696,13 +696,15 @@ export function useSubmitOrder() {
       customerEmail: string;
       customerPhone: string;
       items: CartItem[];
+      note: string;
     }) => {
       if (!actor) throw new Error('Actor not available');
       await actor.submitOrder(
         params.customerName,
         params.customerEmail,
         params.customerPhone,
-        params.items
+        params.items,
+        params.note
       );
     },
     onSuccess: () => {

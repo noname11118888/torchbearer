@@ -48,7 +48,8 @@ export default function CartPage() {
         customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone,
-        items: cartItems
+        items: cartItems,
+        note: formData.message
       });
 
       toast.success('Đơn hàng đã được gửi thành công!');
@@ -296,8 +297,9 @@ export default function CartPage() {
                 id="message"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Ghi chú thêm về đơn hàng..."
-                rows={3}
+                placeholder="Địa chỉ giao hàng, ghi chú thêm về đơn hàng... (tối đa 2000 ký tự)"
+                rows={4}
+                maxLength={2000}
               />
             </div>
           </div>
