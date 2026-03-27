@@ -54,6 +54,7 @@ const layoutOptions = [
 ];
 
 export default function ArticleEditor() {
+  const [activeTab, setActiveTab] = useState('editor');
   const [currentPage, setCurrentPage] = useState(1);
   const [editingArticleId, setEditingArticleId] = useState<bigint | null>(null);
   const [formData, setFormData] = useState<ArticleFormState>({
@@ -157,6 +158,7 @@ export default function ArticleEditor() {
       title: article.title,
       content: article.content,
     });
+    setActiveTab('editor');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -246,7 +248,7 @@ export default function ArticleEditor() {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="editor" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="editor">
             {editingArticleId ? 'Chỉnh sửa bài viết' : 'Tạo bài viết mới'}
@@ -270,16 +272,29 @@ export default function ArticleEditor() {
                       : 'Thêm bài viết mới với nhiều phần nội dung'}
                   </CardDescription>
                 </div>
-                {editingArticleId && (
+                <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    onClick={resetForm}
+                    onClick={() => {
+                      resetForm();
+                      setActiveTab('editor');
+                    }}
                     className="flex items-center gap-2"
                   >
-                    <X className="h-4 w-4" />
-                    Hủy chỉnh sửa
+                    <Plus className="h-4 w-4" />
+                    Tạo bài mới
                   </Button>
-                )}
+                  {editingArticleId && (
+                    <Button
+                      variant="outline"
+                      onClick={resetForm}
+                      className="flex items-center gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Hủy chỉnh sửa
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -566,15 +581,6 @@ export default function ArticleEditor() {
                     Quản lý các bài viết trên trang web
                   </CardDescription>
                 </div>
-                <Button
-                  onClick={() => {
-                    resetForm();
-                    document.querySelector('[value="editor"]')?.dispatchEvent(new Event('click', { bubbles: true }));
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Bài viết mới
-                </Button>
               </div>
             </CardHeader>
             <CardContent>

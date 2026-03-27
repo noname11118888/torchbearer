@@ -78,6 +78,7 @@ type Order =
    customerPhone: text;
    id: nat;
    items: vec OrderItem;
+   note: text;
    status: OrderStatus;
    timestamp: int;
    totalAmount: nat;
@@ -248,7 +249,7 @@ service : {
   setHeadOffice: (id: nat) -> ();
   submitCustomerMessage: (message: CustomerMessage) -> ();
   submitOrder: (customerName: text, customerEmail: text, customerPhone: 
-   text, items: vec CartItem) -> ();
+   text, items: vec CartItem, note: text) -> ();
   updateAboutSection: (about: AboutSection) -> ();
   updateArticleItem: (id: nat, title: text, content: vec ArticleContent) ->
    ();

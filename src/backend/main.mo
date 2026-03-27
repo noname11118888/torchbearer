@@ -370,7 +370,7 @@ persistent actor {
   };
 
   // Order Submission - No authentication required (guest checkout allowed)
-  public shared ({ caller }) func submitOrder(customerName : Text, customerEmail : Text, customerPhone : Text, items : [T.CartItem]) : async () {
+  public shared ({ caller }) func submitOrder(customerName : Text, customerEmail : Text, customerPhone : Text, items : [T.CartItem], note : Text) : async () {
     let orderItems = Array.map(items, 
       func(cartItem) {
         {
@@ -393,6 +393,7 @@ persistent actor {
       totalAmount;
       timestamp = 0;
       status = #pending;
+      note;
     };
     orderManager.create(nextOrderId, newOrder);
 

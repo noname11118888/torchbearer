@@ -46,7 +46,7 @@ const About = () => {
                   onClick={handleLearnMore}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
-                  Khám phá câu chuyện Người cầm đuốc
+                  Khám phá câu chuyện về thương hiệu Người cầm đuốc
                 </Button>
               </>
             )}

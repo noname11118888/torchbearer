@@ -78,6 +78,7 @@ export interface Order {
   'customerName' : string,
   'status' : OrderStatus,
   'customerPhone' : string,
+  'note' : string,
   'totalAmount' : bigint,
   'timestamp' : bigint,
   'items' : Array<OrderItem>,
@@ -196,7 +197,7 @@ export interface _SERVICE {
   'setHeadOffice' : ActorMethod<[bigint], undefined>,
   'submitCustomerMessage' : ActorMethod<[CustomerMessage], undefined>,
   'submitOrder' : ActorMethod<
-    [string, string, string, Array<CartItem>],
+    [string, string, string, Array<CartItem>, string],
     undefined
   >,
   'updateAboutSection' : ActorMethod<[AboutSection], undefined>,

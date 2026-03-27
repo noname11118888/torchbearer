@@ -127,6 +127,7 @@ export const idlFactory = ({ IDL }) => {
     'customerName' : IDL.Text,
     'status' : OrderStatus,
     'customerPhone' : IDL.Text,
+    'note' : IDL.Text,
     'totalAmount' : IDL.Nat,
     'timestamp' : IDL.Int,
     'items' : IDL.Vec(OrderItem),
@@ -230,7 +231,7 @@ export const idlFactory = ({ IDL }) => {
     'setHeadOffice' : IDL.Func([IDL.Nat], [], []),
     'submitCustomerMessage' : IDL.Func([CustomerMessage], [], []),
     'submitOrder' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(CartItem)],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(CartItem), IDL.Text],
         [],
         [],
       ),
