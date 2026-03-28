@@ -208,6 +208,7 @@ service : {
   deleteMediaItem: (id: nat) -> (bool);
   deleteOrder: (orderId: nat) -> (bool);
   deleteProduct: (id: nat) -> (bool);
+  deleteStockist: (id: nat) -> (bool);
   getAboutSection: () -> (AboutSection) query;
   getAdminCMSData: () -> (SerializableAdminCMSData) query;
   getAdmins: () -> (vec AdminEntry) query;

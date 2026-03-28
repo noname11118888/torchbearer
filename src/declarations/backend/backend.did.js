@@ -170,6 +170,7 @@ export const idlFactory = ({ IDL }) => {
     'deleteMediaItem' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'deleteOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'deleteProduct' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'deleteStockist' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'getAboutSection' : IDL.Func([], [AboutSection], ['query']),
     'getAdminCMSData' : IDL.Func([], [SerializableAdminCMSData], ['query']),
     'getAdmins' : IDL.Func([], [IDL.Vec(AdminEntry)], ['query']),

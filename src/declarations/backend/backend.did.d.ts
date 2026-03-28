@@ -164,6 +164,7 @@ export interface _SERVICE {
   'deleteMediaItem' : ActorMethod<[bigint], boolean>,
   'deleteOrder' : ActorMethod<[bigint], boolean>,
   'deleteProduct' : ActorMethod<[bigint], boolean>,
+  'deleteStockist' : ActorMethod<[bigint], boolean>,
   'getAboutSection' : ActorMethod<[], AboutSection>,
   'getAdminCMSData' : ActorMethod<[], SerializableAdminCMSData>,
   'getAdmins' : ActorMethod<[], Array<AdminEntry>>,

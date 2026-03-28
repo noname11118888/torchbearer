@@ -628,6 +628,11 @@ persistent actor {
     };
   };
 
+  public shared ({ caller }) func deleteStockist(id : Nat) : async (Bool) {
+    requireAdminPermission(caller);
+    stockistManager.delete(id);
+  };
+
   public query func getStockist() : async [T.StockistRegion] {
     stockistManager.getAllValues();
   };
