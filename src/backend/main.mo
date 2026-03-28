@@ -615,10 +615,14 @@ persistent actor {
     switch (stockistManager.read(id)) {
       case (null) { Runtime.trap("Stockist not found") };
       case (?stockist) {
+        let c = Array.filter<T.ContactLocation>(stockist.contact, func (x : T.ContactLocation) {
+          // only take items from old array not exist in new array
+          Array.findIndex<T.ContactLocation>(contacts, func(y : T.ContactLocation) { y.id == x.id }) == null
+        });
         stockistManager.update(id, {
           stockist with 
           name;
-          contact = Array.flatten<T.ContactLocation>([stockist.contact, contacts]);
+          contact = Array.flatten<T.ContactLocation>([c, contacts]);
         });
       };
     };

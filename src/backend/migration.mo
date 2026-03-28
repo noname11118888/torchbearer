@@ -24,7 +24,7 @@ module {
       nextTeamMemberId = old.nextTeamMemberId;
       nextIconLinkId = old.nextIconLinkId;
       nextArticleId = old.nextArticleId;
-      nextStockistId = 1;
+      nextStockistId = old.nextStockistId;
 
       showProductPrices = old.showProductPrices;
       // userProfiles = old.userProfiles; // Assuming no changes needed
@@ -89,8 +89,10 @@ module {
       contacts = Map.map<Nat, Old.ContactLocation, New.ContactLocation>(old.contacts, func (k : Nat, x1 : Old.ContactLocation) : New.ContactLocation {
         x1
       });
-      
-      stockists = Map.empty<Nat, New.StockistRegion>();
+      // Map.empty<Nat, New.StockistRegion>();
+      stockists = Map.map<Nat, Old.StockistRegion, New.StockistRegion>(old.stockists, func (k : Nat, x1 : Old.StockistRegion) : New.StockistRegion {
+        x1
+      });
     };
   };
 };

@@ -237,7 +237,7 @@ module {
     nextTeamMemberId : Nat;
     nextIconLinkId : Nat;
     nextArticleId: Nat;
-    // nextStockistId : Nat;
+    nextStockistId : Nat;
 
     showProductPrices : Bool;
     
@@ -259,6 +259,6 @@ module {
 
     teams : Map.Map<Nat, TeamMember>;
     contacts : Map.Map<Nat, ContactLocation>;
-    // stockists : Map.Map<Nat, StockistRegion>;
+    stockists : Map.Map<Nat, StockistRegion>;
   };
 };
