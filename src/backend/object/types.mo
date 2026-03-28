@@ -103,6 +103,12 @@ module {
     isHeadOffice : Bool;
   };
 
+  public type StockistRegion = {
+    id : Nat;
+    name : Text;
+    contact : [ContactLocation];
+  };
+
   public type UserProfile = {
     id : Nat;
     name : Text;
@@ -230,7 +236,8 @@ module {
     nextUserId : Nat;
     nextTeamMemberId : Nat;
     nextIconLinkId : Nat;
-    nextArticleId: Nat;
+    nextArticleId : Nat;
+    nextStockistId : Nat;
 
     showProductPrices : Bool;
     
@@ -252,5 +259,6 @@ module {
 
     teams : Map.Map<Nat, TeamMember>;
     contacts : Map.Map<Nat, ContactLocation>;
+    stockists : Map.Map<Nat, StockistRegion>;
   };
 };

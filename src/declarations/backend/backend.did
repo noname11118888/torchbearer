@@ -20,6 +20,12 @@ type TastingNote =
    imageUrl: text;
    name: text;
  };
+type StockistRegion = 
+ record {
+   contact: vec ContactLocation;
+   id: nat;
+   name: text;
+ };
 type SerializableAdminCMSData = 
  record {
    aboutSection: ContentSection;
@@ -193,6 +199,7 @@ service : {
   addMediaItem: (url: text, caption: text, description: text, mediaType:
    text) -> ();
   addProduct: (product: Product) -> ();
+  addStockist: (stockist: StockistRegion) -> ();
   cancelOrder: (orderId: nat) -> ();
   deleteArticleItem: (id: nat) -> (bool);
   deleteCategory: (categoryId: nat) -> (bool);
@@ -235,6 +242,7 @@ service : {
                             Product;
                           }) query;
   getProductsByCategory: (categoryId: text) -> (vec Product) query;
+  getStockist: () -> (vec StockistRegion) query;
   getTeamMembers: () -> (vec TeamMember) query;
   getTotalArticleCount: () -> (nat) query;
   getTotalMediaCount: () -> (nat) query;
@@ -266,5 +274,6 @@ service : {
   updateOrderStatus: (orderId: nat, status: OrderStatus) -> ();
   updateProduct: (product: Product) -> ();
   updateProductPriceVisibility: (showPrices: bool) -> ();
+  updateStockist: (id: nat, name: text, contacts: vec ContactLocation) -> ();
   updateTeamMembers: (members: vec TeamMember) -> ();
 }

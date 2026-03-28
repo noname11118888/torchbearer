@@ -26,6 +26,7 @@ persistent actor {
   var nextTeamMemberId = 1;
   var nextIconLinkId = 1;
   var nextArticleId = 1;
+  var nextStockistId = 1;
 
   var showProductPrices = true;
   
@@ -42,6 +43,7 @@ persistent actor {
   let userOrders = Map.empty<Principal, T.OrderList>();
   let teams = Map.empty<Nat, T.TeamMember>();
   let contacts = Map.empty<Nat, T.ContactLocation>();
+  let stockists = Map.empty<Nat, T.StockistRegion>();
 
   var floatingBubbleConfig : T.FloatingBubbleConfig = {
     backgroundColor = "#FFA500";
@@ -82,6 +84,7 @@ persistent actor {
 
   transient let articleManager = ObjectCRUD<Nat, T.Article>(articles, Nat.compare);
   transient let userOrdersManager = ObjectCRUD<Principal, T.OrderList>(userOrders, Principal.compare);
+  transient let stockistManager = ObjectCRUD<Nat, T.StockistRegion>(stockists, Nat.compare);
 
   let HERO_SECTION_KEY : Text = "hero_section";
   let ABOUT_SECTION_KEY : Text = "about_section";
@@ -181,10 +184,6 @@ persistent actor {
 
   public query func getIconLinks() : async [T.IconLink] {
     iconLinkManager.getAllValues();
-  };
-
-  public query func getContacts() : async [T.ContactLocation] {
-    contactManager.getAllValues();
   };
 
   public query func getHeadOfficeContact() : async ?T.ContactLocation {
@@ -604,6 +603,31 @@ persistent actor {
     );
   };
 
+  // Stockisk Management - Requires authentication
+  public shared ({ caller }) func addStockist(stockist : T.StockistRegion) : async () {
+    requireAdminPermission(caller);
+    stockistManager.create(nextStockistId, { stockist with id = nextContactId });
+    nextStockistId += 1;
+  };
+
+  public shared ({ caller }) func updateStockist(id : Nat, name : Text, contacts : [T.ContactLocation]) : async () {
+    requireAdminPermission(caller);
+    switch (stockistManager.read(id)) {
+      case (null) { Runtime.trap("Stockist not found") };
+      case (?stockist) {
+        stockistManager.update(id, {
+          stockist with 
+          name;
+          contact = Array.flatten<T.ContactLocation>([stockist.contact, contacts]);
+        });
+      };
+    };
+  };
+
+  public query func getStockist() : async [T.StockistRegion] {
+    stockistManager.getAllValues();
+  };
+
   // Contact Management - Requires authentication
   public shared ({ caller }) func addContact(newContact : T.ContactLocation) : async () {
     requireAdminPermission(caller);
@@ -624,6 +648,10 @@ persistent actor {
   public shared ({ caller }) func deleteContact(id : Nat) : async (Bool) {
     requireAdminPermission(caller);
     contactManager.delete(id);
+  };
+
+  public query func getContacts() : async [T.ContactLocation] {
+    contactManager.getAllValues();
   };
 
   public shared ({ caller }) func setHeadOffice(id : Nat) : async () {

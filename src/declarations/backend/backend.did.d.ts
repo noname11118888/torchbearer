@@ -124,6 +124,11 @@ export interface SerializableAdminCMSData {
   'footer' : FooterData,
   'header' : ContentSection,
 }
+export interface StockistRegion {
+  'id' : bigint,
+  'contact' : Array<ContactLocation>,
+  'name' : string,
+}
 export interface TastingNote {
   'name' : string,
   'description' : string,
@@ -150,6 +155,7 @@ export interface _SERVICE {
   'addContact' : ActorMethod<[ContactLocation], undefined>,
   'addMediaItem' : ActorMethod<[string, string, string, string], undefined>,
   'addProduct' : ActorMethod<[Product], undefined>,
+  'addStockist' : ActorMethod<[StockistRegion], undefined>,
   'cancelOrder' : ActorMethod<[bigint], undefined>,
   'deleteArticleItem' : ActorMethod<[bigint], boolean>,
   'deleteCategory' : ActorMethod<[bigint], boolean>,
@@ -183,6 +189,7 @@ export interface _SERVICE {
   'getProductPriceVisibility' : ActorMethod<[], boolean>,
   'getProducts' : ActorMethod<[], Array<[bigint, Product]>>,
   'getProductsByCategory' : ActorMethod<[string], Array<Product>>,
+  'getStockist' : ActorMethod<[], Array<StockistRegion>>,
   'getTeamMembers' : ActorMethod<[], Array<TeamMember>>,
   'getTotalArticleCount' : ActorMethod<[], bigint>,
   'getTotalMediaCount' : ActorMethod<[], bigint>,
@@ -217,6 +224,10 @@ export interface _SERVICE {
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
   'updateProduct' : ActorMethod<[Product], undefined>,
   'updateProductPriceVisibility' : ActorMethod<[boolean], undefined>,
+  'updateStockist' : ActorMethod<
+    [bigint, string, Array<ContactLocation>],
+    undefined
+  >,
   'updateTeamMembers' : ActorMethod<[Array<TeamMember>], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

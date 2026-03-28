@@ -24,6 +24,7 @@ module {
       nextTeamMemberId = old.nextTeamMemberId;
       nextIconLinkId = old.nextIconLinkId;
       nextArticleId = old.nextArticleId;
+      nextStockistId = 1;
 
       showProductPrices = old.showProductPrices;
       // userProfiles = old.userProfiles; // Assuming no changes needed
@@ -88,6 +89,8 @@ module {
       contacts = Map.map<Nat, Old.ContactLocation, New.ContactLocation>(old.contacts, func (k : Nat, x1 : Old.ContactLocation) : New.ContactLocation {
         x1
       });
+      
+      stockists = Map.empty<Nat, New.StockistRegion>();
     };
   };
 };

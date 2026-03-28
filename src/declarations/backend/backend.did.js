@@ -44,6 +44,11 @@ export const idlFactory = ({ IDL }) => {
     'paring' : IDL.Vec(PairingFood),
     'profile' : IDL.Vec(FlavorProfile),
   });
+  const StockistRegion = IDL.Record({
+    'id' : IDL.Nat,
+    'contact' : IDL.Vec(ContactLocation),
+    'name' : IDL.Text,
+  });
   const AboutMediaSection = IDL.Record({
     'title' : IDL.Text,
     'description' : IDL.Text,
@@ -156,6 +161,7 @@ export const idlFactory = ({ IDL }) => {
     'addContact' : IDL.Func([ContactLocation], [], []),
     'addMediaItem' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
     'addProduct' : IDL.Func([Product], [], []),
+    'addStockist' : IDL.Func([StockistRegion], [], []),
     'cancelOrder' : IDL.Func([IDL.Nat], [], []),
     'deleteArticleItem' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'deleteCategory' : IDL.Func([IDL.Nat], [IDL.Bool], []),
@@ -213,6 +219,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Product)],
         ['query'],
       ),
+    'getStockist' : IDL.Func([], [IDL.Vec(StockistRegion)], ['query']),
     'getTeamMembers' : IDL.Func([], [IDL.Vec(TeamMember)], ['query']),
     'getTotalArticleCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getTotalMediaCount' : IDL.Func([], [IDL.Nat], ['query']),
@@ -257,6 +264,11 @@ export const idlFactory = ({ IDL }) => {
     'updateOrderStatus' : IDL.Func([IDL.Nat, OrderStatus], [], []),
     'updateProduct' : IDL.Func([Product], [], []),
     'updateProductPriceVisibility' : IDL.Func([IDL.Bool], [], []),
+    'updateStockist' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Vec(ContactLocation)],
+        [],
+        [],
+      ),
     'updateTeamMembers' : IDL.Func([IDL.Vec(TeamMember)], [], []),
   });
 };
