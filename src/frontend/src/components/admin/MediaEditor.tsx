@@ -263,9 +263,19 @@ export default function MediaEditor({
 
       const progressInterval = setInterval(simulateProgress, 300);
 
-      const f = await compressImageInBrowser(file, { maxSizeBytes: 1024 * 1024 });
+      let fileToUpload = file;
+      // Chỉ nén nếu là file ảnh
+      if (file.type.startsWith('image/')) {
+        try {
+          const compressed = await compressImageInBrowser(file, { maxSizeBytes: 1024 * 1024 });
+          fileToUpload = compressed.file;
+        } catch (e) {
+          console.warn('Image compression failed, uploading original:', e);
+        }
+      }
+
       // Store the file using AssetManager
-      const key = await assetManager.store(f.file);
+      const key = await assetManager.store(fileToUpload);
       
       clearInterval(progressInterval);
       
@@ -365,8 +375,19 @@ export default function MediaEditor({
         setUploadProgress(prev => ({ ...prev, [progressKey]: 50 }));
 
         try {
+          let fileToUpload = file;
+          // Nén ảnh cho batch upload
+          if (file.type.startsWith('image/')) {
+            try {
+              const compressed = await compressImageInBrowser(file, { maxSizeBytes: 1024 * 1024 });
+              fileToUpload = compressed.file;
+            } catch (e) {
+              console.warn(`Compression failed for ${file.name}, using original`, e);
+            }
+          }
+
           // Store in batch
-          const key = await batch.store(file);
+          const key = await batch.store(fileToUpload);
           
           const newAsset: AssetMetadata = {
             id: key,

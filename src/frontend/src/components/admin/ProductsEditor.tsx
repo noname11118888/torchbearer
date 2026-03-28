@@ -311,8 +311,10 @@ export default function ProductsEditor() {
                         <SelectValue placeholder="Chọn giá trị" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="Value">Value</SelectItem>
                         <SelectItem value="Medium">Medium</SelectItem>
                         <SelectItem value="Premium">Premium</SelectItem>
+                        <SelectItem value="UltraPremium">Ultra Premium</SelectItem>
                         <SelectItem value="Magnum">Magnum</SelectItem>
                       </SelectContent>
                     </Select>
