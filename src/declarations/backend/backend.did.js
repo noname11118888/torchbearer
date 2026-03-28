@@ -265,11 +265,7 @@ export const idlFactory = ({ IDL }) => {
     'updateOrderStatus' : IDL.Func([IDL.Nat, OrderStatus], [], []),
     'updateProduct' : IDL.Func([Product], [], []),
     'updateProductPriceVisibility' : IDL.Func([IDL.Bool], [], []),
-    'updateStockist' : IDL.Func(
-        [IDL.Nat, IDL.Text, IDL.Vec(ContactLocation)],
-        [],
-        [],
-      ),
+    'updateStockist' : IDL.Func([StockistRegion], [], []),
     'updateTeamMembers' : IDL.Func([IDL.Vec(TeamMember)], [], []),
   });
 };

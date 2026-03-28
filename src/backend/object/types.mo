@@ -108,6 +108,7 @@ module {
   public type StockistRegion = {
     id : Nat;
     name : Text;
+    location : Text;
     contact : [ContactLocation];
   };
 

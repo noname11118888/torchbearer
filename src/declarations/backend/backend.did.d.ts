@@ -225,10 +225,7 @@ export interface _SERVICE {
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
   'updateProduct' : ActorMethod<[Product], undefined>,
   'updateProductPriceVisibility' : ActorMethod<[boolean], undefined>,
-  'updateStockist' : ActorMethod<
-    [bigint, string, Array<ContactLocation>],
-    undefined
-  >,
+  'updateStockist' : ActorMethod<[StockistRegion], undefined>,
   'updateTeamMembers' : ActorMethod<[Array<TeamMember>], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

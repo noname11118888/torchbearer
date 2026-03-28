@@ -32,7 +32,7 @@ const Header = () => {
     { label: 'Sản phẩm', href: '/ruou-vang', isRoute: true },
     { label: 'Bài viết', href: '/cam-nang-ruou-vang', isRoute: true },
     { label: 'Thư viện', href: '/thu-vien-ruou-vang', isRoute: true },
-    { label: 'Liên hệ', href: '/mua-o-dau', isRoute: true }
+    { label: 'Mua ở đâu', href: '/mua-o-dau', isRoute: true }
   ];
 
   const handleNavigation = (href: string, isRoute: boolean) => {

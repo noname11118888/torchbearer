@@ -23,6 +23,7 @@ import AdminManagementEditor from './AdminManagementEditor';
 import ProductSettingsEditor from './ProductSettingsEditor';
 import OrdersEditor from './OrdersEditor';
 import ArticleEditor from './ArticleEditor';
+import StockistEditor from './StockistEditor';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -97,6 +98,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="contact">Liên hệ</TabsTrigger>
             <TabsTrigger value="messages">Tin nhắn</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="stockists">Stockists</TabsTrigger>
             <TabsTrigger value="admins">Quản lý Admin</TabsTrigger>
             <TabsTrigger value="bubble">Bubble</TabsTrigger>
             <TabsTrigger value="footer">Footer</TabsTrigger>
@@ -153,6 +155,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="orders">
             <OrdersEditor />
+          </TabsContent>
+
+          <TabsContent value="stockists">
+            <StockistEditor />
           </TabsContent>
 
           <TabsContent value="admins">

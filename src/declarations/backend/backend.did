@@ -275,6 +275,6 @@ service : {
   updateOrderStatus: (orderId: nat, status: OrderStatus) -> ();
   updateProduct: (product: Product) -> ();
   updateProductPriceVisibility: (showPrices: bool) -> ();
-  updateStockist: (id: nat, name: text, contacts: vec ContactLocation) -> ();
+  updateStockist: (stockist: StockistRegion) -> ();
   updateTeamMembers: (members: vec TeamMember) -> ();
 }

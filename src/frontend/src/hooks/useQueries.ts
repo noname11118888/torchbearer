@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { ContentSection, FooterData, TeamMember, Product, UserProfile, IconLink, ContactLocation, FloatingBubbleConfig, Category, AboutSection, CustomerMessage, CartItem, MediaItem, AdminEntry, OrderStatus, Article, ArticleContent } from './../../../declarations/backend/backend.did';
-import { createMockAboutSection, createMockArticle, createMockArticleList, createMockUserProfile, createMockContentSection, createMockFooterData, createMockTeamMembers, createMockProductList, createMockIconLinks, createMockMediaItems, createMockContactLocations, createMockFloatingBubbleConfig, createMockCategories, createMockCustomerMessages, createMockAdminEntries, createMockOrders, createMockProductPriceVisibility } from '../utils/mockData'; // Import mock data
+import type { ContentSection, FooterData, TeamMember, Product, UserProfile, IconLink, ContactLocation, FloatingBubbleConfig, Category, AboutSection, CustomerMessage, CartItem, MediaItem, AdminEntry, OrderStatus, Article, ArticleContent, StockistRegion } from './../../../declarations/backend/backend.did';
+import { createMockAboutSection, createMockArticle, createMockArticleList, createMockUserProfile, createMockContentSection, createMockFooterData, createMockTeamMembers, createMockProductList, createMockIconLinks, createMockMediaItems, createMockContactLocations, createMockFloatingBubbleConfig, createMockCategories, createMockCustomerMessages, createMockAdminEntries, createMockOrders, createMockProductPriceVisibility, createMockStockistRegions } from '../utils/mockData'; // Import mock data
 
 const isMockMode = () => process.env.DFX_NETWORK !== "ic";
 
@@ -1121,6 +1121,71 @@ export function useDeleteArticle() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['articles'] });
       queryClient.invalidateQueries({ queryKey: ['articles', 'count'] });
+    },
+  });
+}
+
+// Stockist Queries
+export function useGetStockists() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<StockistRegion[]>({
+    queryKey: ['stockists'],
+    queryFn: async () => {
+      if (isMockMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return createMockStockistRegions();
+      }
+      if (!actor) throw new Error('Actor not available');
+      return actor.getStockist();
+    },
+    enabled: !!actor && !isFetching || isMockMode(),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+// Stockist Mutations
+export function useAddStockist() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (stockist: StockistRegion) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.addStockist(stockist);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stockists'] });
+    },
+  });
+}
+
+export function useUpdateStockist() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (stockist: StockistRegion) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.updateStockist(stockist);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stockists'] });
+    },
+  });
+}
+
+export function useDeleteStockist() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.deleteStockist(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stockists'] });
     },
   });
 }

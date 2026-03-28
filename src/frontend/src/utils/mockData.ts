@@ -367,6 +367,27 @@ export const createMockOrders = (count: number = 5): [bigint, Order][] => {
   return orders;
 };
 
+// Stockist
+export interface StockistRegion {
+  'id' : bigint,
+  'contact' : Array<ContactLocation>,
+  'name' : string,
+}
+
+export const createMockStockistRegion = (id: number): StockistRegion => ({
+  id: BigInt(id),
+  name: id === 1 ? "Tasmania" : id === 2 ? "Victoria" : `Vùng ${id}`,
+  contact: createMockContactLocations(2),
+});
+
+export const createMockStockistRegions = (count: number = 3): StockistRegion[] => {
+  const regions: StockistRegion[] = [];
+  for (let i = 1; i <= count; i++) {
+    regions.push(createMockStockistRegion(i));
+  }
+  return regions;
+};
+
 // Product Price Visibility
 export const createMockProductPriceVisibility = (isVisible: boolean = true): boolean => isVisible;
 

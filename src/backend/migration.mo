@@ -92,6 +92,7 @@ module {
       // Map.empty<Nat, New.StockistRegion>();
       stockists = Map.map<Nat, Old.StockistRegion, New.StockistRegion>(old.stockists, func (k : Nat, x1 : Old.StockistRegion) : New.StockistRegion {
         x1
+        // {x1 with location = ""}
       });
     };
   };

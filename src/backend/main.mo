@@ -610,20 +610,12 @@ persistent actor {
     nextStockistId += 1;
   };
 
-  public shared ({ caller }) func updateStockist(id : Nat, name : Text, contacts : [T.ContactLocation]) : async () {
+  public shared ({ caller }) func updateStockist(stockist : T.StockistRegion) : async () {
     requireAdminPermission(caller);
-    switch (stockistManager.read(id)) {
+    switch (stockistManager.read(stockist.id)) {
       case (null) { Runtime.trap("Stockist not found") };
-      case (?stockist) {
-        let c = Array.filter<T.ContactLocation>(stockist.contact, func (x : T.ContactLocation) {
-          // only take items from old array not exist in new array
-          Array.findIndex<T.ContactLocation>(contacts, func(y : T.ContactLocation) { y.id == x.id }) == null
-        });
-        stockistManager.update(id, {
-          stockist with 
-          name;
-          contact = Array.flatten<T.ContactLocation>([c, contacts]);
-        });
+      case (?s) {
+        stockistManager.update(stockist.id, stockist);
       };
     };
   };
