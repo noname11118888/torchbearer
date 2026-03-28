@@ -25,14 +25,16 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
   const navigate = useNavigate();
   const { data: showPrices = true } = useGetProductPriceVisibility();
 
-  const displayWines = (products || []).map((p) => ({
-    id: p.id,
-    name: (p as any).name || 'Không tên',
-    type: (p as any).categories && (p as any).categories.length > 0 ? (p as any).categories[0].name : 'Rượu Vang',
-    description: (p as any).description || '',
-    image: typeof (p as any).imageUrl === 'string' && (p as any).imageUrl.startsWith('http') ? (p as any).imageUrl : `/assets/${(p as any).imageUrl}`,
-    price: (p as any).price ?? 0n,
-  }));
+  const displayWines = (products || [])
+    .filter((p) => (p as any).isHighlighted === true) // Filter highlight products
+    .map((p) => ({
+      id: p.id,
+      name: (p as any).name || 'Không tên',
+      type: (p as any).categories && (p as any).categories.length > 0 ? (p as any).categories[0].name : 'Rượu Vang',
+      description: (p as any).description || '',
+      image: typeof (p as any).imageUrl === 'string' && (p as any).imageUrl.startsWith('http') ? (p as any).imageUrl : `/assets/${(p as any).imageUrl}`,
+      price: (p as any).price ?? 0n,
+    }));
 
   if (isError) {
     console.error('Error loading products:', error);
