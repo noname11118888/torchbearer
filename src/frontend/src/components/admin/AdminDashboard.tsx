@@ -82,26 +82,25 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 mt-12 lg:mt-0">
+      <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-7 lg:grid-cols-14 w-full max-w-7xl gap-1">
-            <TabsTrigger value="hero">Hero</TabsTrigger>
-            <TabsTrigger value="about">Giới thiệu</TabsTrigger>
-            <TabsTrigger value="products">Sản phẩm</TabsTrigger>
-            <TabsTrigger value="settings">Cài đặt SP</TabsTrigger>
-            <TabsTrigger value="categories">Danh mục</TabsTrigger>
-            <TabsTrigger value="articles">Bài viết</TabsTrigger>
-            {/* <TabsTrigger value="process">Quy trình</TabsTrigger> */}
-            <TabsTrigger value="team">Đội ngũ</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
-            <TabsTrigger value="links">Liên kết</TabsTrigger>
-            <TabsTrigger value="contact">Liên hệ</TabsTrigger>
-            <TabsTrigger value="messages">Tin nhắn</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="stockists">Stockists</TabsTrigger>
-            <TabsTrigger value="admins">Quản lý Admin</TabsTrigger>
-            <TabsTrigger value="bubble">Bubble</TabsTrigger>
-            <TabsTrigger value="footer">Footer</TabsTrigger>
+          <TabsList className="flex flex-wrap h-auto p-1 bg-muted rounded-lg w-full max-w-7xl gap-1">
+            <TabsTrigger value="hero" className="flex-grow md:flex-none">Hero</TabsTrigger>
+            <TabsTrigger value="about" className="flex-grow md:flex-none">Giới thiệu</TabsTrigger>
+            <TabsTrigger value="products" className="flex-grow md:flex-none">Sản phẩm</TabsTrigger>
+            <TabsTrigger value="settings" className="flex-grow md:flex-none">Cài đặt SP</TabsTrigger>
+            <TabsTrigger value="categories" className="flex-grow md:flex-none">Danh mục</TabsTrigger>
+            <TabsTrigger value="articles" className="flex-grow md:flex-none">Bài viết</TabsTrigger>
+            <TabsTrigger value="team" className="flex-grow md:flex-none">Đội ngũ</TabsTrigger>
+            <TabsTrigger value="media" className="flex-grow md:flex-none">Media</TabsTrigger>
+            <TabsTrigger value="links" className="flex-grow md:flex-none">Liên kết</TabsTrigger>
+            <TabsTrigger value="contact" className="flex-grow md:flex-none">Liên hệ</TabsTrigger>
+            <TabsTrigger value="messages" className="flex-grow md:flex-none">Tin nhắn</TabsTrigger>
+            <TabsTrigger value="orders" className="flex-grow md:flex-none">Orders</TabsTrigger>
+            <TabsTrigger value="stockists" className="flex-grow md:flex-none">Stockists</TabsTrigger>
+            <TabsTrigger value="admins" className="flex-grow md:flex-none">Quản lý Admin</TabsTrigger>
+            <TabsTrigger value="bubble" className="flex-grow md:flex-none">Bubble</TabsTrigger>
+            <TabsTrigger value="footer" className="flex-grow md:flex-none">Footer</TabsTrigger>
           </TabsList>
 
           <TabsContent value="hero">

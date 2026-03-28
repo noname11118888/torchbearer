@@ -38,11 +38,12 @@ export default function StockistEditor() {
   const handleAddRegion = () => {
     const newRegion: StockistRegion = {
       id: 0n,
-      name: 'New Region',
+      name: '',
       location: '',
       contact: [],
     };
-    setEditingStockists([...editingStockists, newRegion]);
+    // Đưa region mới lên đầu danh sách
+    setEditingStockists([newRegion, ...editingStockists]);
   };
 
   const handleUpdateRegionField = (index: number, field: keyof StockistRegion, value: string) => {
@@ -55,16 +56,17 @@ export default function StockistEditor() {
     const updated = [...editingStockists];
     const newContact: ContactLocation = {
       id: 0n,
-      name: 'New Stockist Name',
+      name: '',
       address: '',
       phone: '',
       email: '',
       mapUrl: '',
       isHeadOffice: false,
     };
+    // Đưa contact mới lên đầu danh sách của region đó
     updated[regionIndex] = {
       ...updated[regionIndex],
-      contact: [...updated[regionIndex].contact, newContact],
+      contact: [newContact, ...updated[regionIndex].contact],
     };
     setEditingStockists(updated);
   };

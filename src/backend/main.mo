@@ -606,7 +606,7 @@ persistent actor {
   // Stockisk Management - Requires authentication
   public shared ({ caller }) func addStockist(stockist : T.StockistRegion) : async () {
     requireAdminPermission(caller);
-    stockistManager.create(nextStockistId, { stockist with id = nextContactId });
+    stockistManager.create(nextStockistId, { stockist with id = nextStockistId });
     nextStockistId += 1;
   };
 
