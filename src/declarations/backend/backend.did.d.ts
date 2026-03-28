@@ -128,6 +128,7 @@ export interface StockistRegion {
   'id' : bigint,
   'contact' : Array<ContactLocation>,
   'name' : string,
+  'location' : string,
 }
 export interface TastingNote {
   'name' : string,

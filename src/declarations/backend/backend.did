@@ -24,6 +24,7 @@ type StockistRegion =
  record {
    contact: vec ContactLocation;
    id: nat;
+   location: text;
    name: text;
  };
 type SerializableAdminCMSData = 

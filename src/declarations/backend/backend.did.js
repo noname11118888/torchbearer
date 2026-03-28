@@ -48,6 +48,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat,
     'contact' : IDL.Vec(ContactLocation),
     'name' : IDL.Text,
+    'location' : IDL.Text,
   });
   const AboutMediaSection = IDL.Record({
     'title' : IDL.Text,

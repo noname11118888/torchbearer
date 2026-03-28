@@ -372,11 +372,13 @@ export interface StockistRegion {
   'id' : bigint,
   'contact' : Array<ContactLocation>,
   'name' : string,
+  'location' : string,
 }
 
 export const createMockStockistRegion = (id: number): StockistRegion => ({
   id: BigInt(id),
   name: id === 1 ? "Tasmania" : id === 2 ? "Victoria" : `Vùng ${id}`,
+  location: id === 1 ? "Tasmania, AU" : id === 2 ? "Victoria, AU" : "Other",
   contact: createMockContactLocations(2),
 });
 

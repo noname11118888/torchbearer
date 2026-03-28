@@ -39,14 +39,15 @@ export default function StockistEditor() {
     const newRegion: StockistRegion = {
       id: 0n,
       name: 'New Region',
+      location: '',
       contact: [],
     };
     setEditingStockists([...editingStockists, newRegion]);
   };
 
-  const handleUpdateRegionName = (index: number, name: string) => {
+  const handleUpdateRegionField = (index: number, field: keyof StockistRegion, value: string) => {
     const updated = [...editingStockists];
-    updated[index] = { ...updated[index], name };
+    updated[index] = { ...updated[index], [field]: value };
     setEditingStockists(updated);
   };
 
@@ -137,18 +138,29 @@ export default function StockistEditor() {
         {editingStockists.map((region, rIndex) => (
           <Card key={rIndex} className="border-2">
             <CardHeader className="bg-muted/30 pb-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 space-y-1">
-                  <Label htmlFor={`region-name-${rIndex}`}>Tên vùng (Region Name)</Label>
-                  <Input
-                    id={`region-name-${rIndex}`}
-                    value={region.name}
-                    onChange={(e) => handleUpdateRegionName(rIndex, e.target.value)}
-                    className="font-bold text-lg"
-                    placeholder="VD: Tasmania, Victoria, Vietnam..."
-                  />
+              <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                  <div className="space-y-1">
+                    <Label htmlFor={`region-name-${rIndex}`}>Tên vùng (Region Name)</Label>
+                    <Input
+                      id={`region-name-${rIndex}`}
+                      value={region.name}
+                      onChange={(e) => handleUpdateRegionField(rIndex, 'name', e.target.value)}
+                      className="font-bold text-lg"
+                      placeholder="VD: Tasmania, Victoria, Vietnam..."
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`region-location-${rIndex}`}>Vị trí (Location)</Label>
+                    <Input
+                      id={`region-location-${rIndex}`}
+                      value={region.location}
+                      onChange={(e) => handleUpdateRegionField(rIndex, 'location', e.target.value)}
+                      placeholder="VD: Hobart, TAS or Ho Chi Minh City..."
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 mt-6">
+                <div className="flex items-center gap-2">
                   <Button 
                     variant="outline" 
                     onClick={() => handleSaveStockist(region)}

@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mt-12 lg:mt-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid grid-cols-7 lg:grid-cols-14 w-full max-w-7xl gap-1">
             <TabsTrigger value="hero">Hero</TabsTrigger>
