@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useGetArticles, useGetTotalArticleCount } from '../hooks/useQueries';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import MediaRenderer from '../components/ui/MediaRender';
 
 // Helper function to extract first thumbnail and description from article content
 function getArticleThumb(content: any[]) {
@@ -94,7 +95,7 @@ export default function ArticleListPage() {
           {/* Articles Grid */}
           {!isLoading && !isError && articles.length > 0 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
                 {articles.map((article) => {
                   const { imageUrl, description } = getArticleThumb(article.content);
                   
@@ -102,57 +103,51 @@ export default function ArticleListPage() {
                     <article
                       key={article.id}
                       onClick={() => handleArticleClick(Number(article.id))}
-                      className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer flex flex-col"
+                      className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer flex flex-col h-full"
                     >
-                      {/* Thumbnail Image */}
-                      {imageUrl && (
-                        <div className="relative w-full h-48 bg-muted overflow-hidden">
-                          <img
-                            src={imageUrl}
+                      {/* Thumbnail Image - Ratio 4:6 (w:h) */}
+                      <div className="relative w-full aspect-[4/6] bg-muted overflow-hidden">
+                        {imageUrl ? (
+                          <MediaRenderer
+                            url={imageUrl}
                             alt={article.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            objectFit="cover"
+                            className="group-hover:scale-110 transition-transform duration-700"
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+                            <span className="text-4xl font-serif">TB</span>
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      </div>
 
-                      <div className="p-6 flex flex-col flex-grow">
-                        {/* Title */}
-                        <h2 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                          {article.title}
-                        </h2>
-
+                      <div className="p-6 flex flex-col flex-grow bg-card">
                         {/* Publish Date */}
-                        <div className="text-sm text-foreground/60 mb-4">
+                        <div className="text-[10px] uppercase tracking-widest text-primary font-bold mb-2">
                           {new Date(Number(article.publishTime) / 1000000).toLocaleDateString('vi-VN', {
                             year: 'numeric',
-                            month: 'long',
+                            month: 'short',
                             day: 'numeric',
                           })}
                         </div>
 
+                        {/* Title */}
+                        <h2 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                          {article.title}
+                        </h2>
+
                         {/* Description from content */}
                         {description && (
-                          <div className="text-foreground/70 line-clamp-2 mb-4">
+                          <div className="text-sm text-foreground/60 line-clamp-3 mb-6 flex-grow leading-relaxed">
                             {description}
                           </div>
                         )}
 
-                        {/* Preview of content (fallback if no description) */}
-                        {!description && article.content && article.content.length > 0 && (
-                          <div className="text-foreground/70 line-clamp-3 mb-4">
-                            {article.content
-                              .filter(item => 'text' in item)
-                              .map(item => (item as any).text)
-                              .join(' ')
-                              .substring(0, 150)}
-                            ...
-                          </div>
-                        )}
-
                         {/* Read More Link */}
-                        <div className="inline-flex items-center text-primary font-semibold group-hover:gap-2 transition-all mt-auto">
-                          Đọc tiếp
-                          <ChevronRight className="w-4 h-4 ml-2" />
+                        <div className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-foreground group-hover:text-primary transition-colors mt-auto">
+                          Khám phá
+                          <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                         </div>
                       </div>
                     </article>
