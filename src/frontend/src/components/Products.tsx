@@ -26,15 +26,22 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
   const { data: showPrices = true } = useGetProductPriceVisibility();
 
   const displayWines = (products || [])
-    .filter((p) => (p as any).isHighlighted === true) // Filter highlight products
-    .map((p) => ({
-      id: p.id,
-      name: (p as any).name || 'Không tên',
-      type: (p as any).categories && (p as any).categories.length > 0 ? (p as any).categories[0].name : 'Rượu Vang',
-      description: (p as any).description || '',
-      image: typeof (p as any).imageUrl === 'string' && (p as any).imageUrl.startsWith('http') ? (p as any).imageUrl : `/assets/${(p as any).imageUrl}`,
-      price: (p as any).price ?? 0n,
-    }));
+    .filter((p) => p.isDisplay !== false) // Filter only displayed products
+    .filter((p) => p.isHighlighted === true) // Filter highlight products
+    .map((p) => {
+      const imageUrl = Array.isArray(p.imageUrl) && p.imageUrl.length > 0 
+        ? p.imageUrl[0] 
+        : (typeof p.imageUrl === 'string' ? p.imageUrl : '');
+      
+      return {
+        id: p.id,
+        name: p.name || 'Không tên',
+        type: p.categories && p.categories.length > 0 ? p.categories[0].name : 'Rượu Vang',
+        description: p.description || '',
+        image: imageUrl.startsWith('http') ? imageUrl : `/assets/${imageUrl}`,
+        price: p.price ?? 0n,
+      };
+    });
 
   if (isError) {
     console.error('Error loading products:', error);

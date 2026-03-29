@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -42,9 +42,14 @@ export default function OrderPage() {
   });
 
   const product = productsData?.find(([id]) => id.toString() === productId)?.[1];
-  const relatedProducts = productsData?.filter(([id]) => id.toString() !== productId).slice(0, 4) || [];
+  const relatedProducts = productsData?.filter(([id, p]) => id.toString() !== productId && p.isDisplay !== false).slice(0, 4) || [];
 
   useEffect(() => {
+    if (product && product.isDisplay === false) {
+      toast.error('Sản phẩm này hiện không hiển thị');
+      navigate({ to: '/ruou-vang' });
+    }
+    
     if (product) {
       document.title = `${product.name} | Torch Bearer Premium Wine`;
       
@@ -125,9 +130,16 @@ export default function OrderPage() {
     );
   }
 
-  const imageUrl = product.imageUrl.startsWith('http')
-    ? product.imageUrl
-    : `/assets/${product.imageUrl}`;
+  const resolveImageUrl = (url: string) => url.startsWith('http') ? url : `/assets/${url}`;
+
+  const productImages = useMemo(() => {
+    if (!product) return [];
+    if (Array.isArray(product.imageUrl)) {
+      return product.imageUrl.filter(url => url.trim() !== '').map(resolveImageUrl);
+    }
+    return product.imageUrl ? [resolveImageUrl(product.imageUrl)] : [];
+  }, [product]);
+
   const totalPrice = Number(product.price) * quantity;
 
   // Mock data for demonstration - in production, this would come from backend
@@ -158,9 +170,6 @@ export default function OrderPage() {
 
   const pairings = product.paring || [];
   const mainFlavors = product.tasting || [];
-
-  // Helper to resolve image URLs
-  const resolveImageUrl = (url: string) => url.startsWith('http') ? url : `/assets/${url}`;
 
   // Helper to render icon or image
   const renderIconOrImage = (iconSource: string, altText: string, className: string = '') => {
@@ -202,31 +211,53 @@ export default function OrderPage() {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
             {/* Left Column - Media Gallery */}
             <div className="space-y-4">
-              <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gradient-to-br from-muted/50 to-muted shadow-xl">
-                <img
-                  src={imageUrl}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-8"
-                  onError={(e) => {
-                    e.currentTarget.src = '/assets/image.png';
-                  }}
-                />
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gradient-to-br from-muted/50 to-muted shadow-xl group">
+                {productImages.length > 1 ? (
+                  <Carousel className="w-full h-full">
+                    <CarouselContent>
+                      {productImages.map((img, idx) => (
+                        <CarouselItem key={idx}>
+                          <div className="aspect-[3/4] relative">
+                            <img
+                              src={img}
+                              alt={`${product.name} - ${idx + 1}`}
+                              className="w-full h-full object-contain p-8"
+                              onError={(e) => { e.currentTarget.src = '/assets/image.png'; }}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CarouselNext className="right-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Carousel>
+                ) : (
+                  <img
+                    src={productImages[0] || '/assets/image.png'}
+                    alt={product.name}
+                    className="w-full h-full object-contain p-8"
+                    onError={(e) => { e.currentTarget.src = '/assets/image.png'; }}
+                  />
+                )}
               </div>
-              {/* Thumbnail Gallery - placeholder for future enhancement */}
-              <div className="grid grid-cols-4 gap-2 mb-6">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-square rounded-md overflow-hidden bg-muted/30 border-2 border-transparent hover:border-primary cursor-pointer transition-colors">
-                    <img
-                      src={imageUrl}
-                      alt={`${product.name} view ${i}`}
-                      className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity"
-                      onError={(e) => {
-                        e.currentTarget.src = '/assets/image.png';
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
+              
+              {/* Thumbnail Gallery */}
+              {productImages.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {productImages.map((img, idx) => (
+                    <div 
+                      key={idx} 
+                      className="w-20 h-20 bg-muted/30 rounded-lg flex-shrink-0 cursor-pointer overflow-hidden border-2 border-transparent hover:border-primary/30 transition-colors"
+                    >
+                      <img 
+                        src={img} 
+                        alt={`Thumbnail ${idx}`} 
+                        className="w-full h-full object-contain p-2"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Product Description Moved Here */}
               <div className="bg-muted/30 p-6 rounded-lg border border-border/50">
@@ -659,12 +690,16 @@ export default function OrderPage() {
               >
                 <CarouselContent className="-ml-4">
                   {relatedProducts.map(([id, relatedProduct]) => {
-                    const relatedImageUrl = relatedProduct.imageUrl.startsWith('http')
-                      ? relatedProduct.imageUrl
-                      : `/assets/${relatedProduct.imageUrl}`;
+                    const firstImg = Array.isArray(relatedProduct.imageUrl) && relatedProduct.imageUrl.length > 0 
+                      ? relatedProduct.imageUrl[0] 
+                      : (typeof relatedProduct.imageUrl === 'string' ? relatedProduct.imageUrl : '');
+                      
+                    const relatedImageUrl = firstImg.startsWith('http')
+                      ? firstImg
+                      : `/assets/${firstImg}`;
                     
                     return (
-                      <CarouselItem key={id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                      <CarouselItem key={id.toString()} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                         <Card 
                           className="cursor-pointer hover:shadow-xl transition-shadow"
                           onClick={() => navigate({ to: `/ruou-vang/${encodeURIComponent(id.toString())}` })}
@@ -684,7 +719,7 @@ export default function OrderPage() {
                             {relatedProduct.categories && relatedProduct.categories.length > 0 && (
                               <div className="flex flex-wrap gap-1 mb-2">
                                 {relatedProduct.categories.slice(0, 2).map((catId) => (
-                                  <Badge key={catId.id} variant="outline" className="text-xs">
+                                  <Badge key={catId.id.toString()} variant="outline" className="text-xs">
                                     {catId.name}
                                   </Badge>
                                 ))}

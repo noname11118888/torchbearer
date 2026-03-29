@@ -32,6 +32,9 @@ export default function ProductPage() {
   // Filter products based on selected filters
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
+      // Filter by isDisplay
+      if (product.isDisplay === false) return false;
+      
       const price = Number(product.price);
       // Only apply price filter if prices are visible
       const inPriceRange = !showPrices || (price >= priceRange[0] && price <= priceRange[1]);
@@ -168,9 +171,13 @@ export default function ProductPage() {
               </div>
               <div className="grid md:grid-cols-3 gap-8">
                 {filteredProducts.map((product, index) => {
-                  const imageUrl = product.imageUrl.startsWith('http') 
-                    ? product.imageUrl 
-                    : `/assets/${product.imageUrl}`;
+                  const firstImg = Array.isArray(product.imageUrl) && product.imageUrl.length > 0 
+                    ? product.imageUrl[0] 
+                    : (typeof product.imageUrl === 'string' ? product.imageUrl : '');
+                    
+                  const imageUrl = firstImg.startsWith('http') 
+                    ? firstImg 
+                    : `/assets/${firstImg}`;
                   
                   return (
                     <Card
