@@ -132,9 +132,13 @@ export default function CartPage() {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => {
-                const imageUrl = item.product.imageUrl.startsWith('http')
-                  ? item.product.imageUrl
-                  : `/assets/${item.product.imageUrl}`;
+                const firstImg = Array.isArray(item.product.imageUrl) && item.product.imageUrl.length > 0 
+                  ? item.product.imageUrl[0] 
+                  : (typeof item.product.imageUrl === 'string' ? item.product.imageUrl : '');
+                
+                const imageUrl = firstImg.startsWith('http')
+                  ? firstImg
+                  : `/assets/${firstImg}`;
                 const itemTotal = Number(item.product.price) * item.quantity;
 
                 return (
