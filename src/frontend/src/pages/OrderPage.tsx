@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 export default function OrderPage() {
   const navigate = useNavigate();
   const params = useParams({ from: '/ruou-vang/$productId' });
-  const productId = decodeURIComponent(params.productId);
+  const productKey = decodeURIComponent(params.productId);
   
   const { data: productsData, isLoading } = useGetProducts();
   const { data: showPrices = true } = useGetProductPriceVisibility();
@@ -41,8 +41,8 @@ export default function OrderPage() {
     message: ''
   });
 
-  const product = productsData?.find(([id]) => id.toString() === productId)?.[1];
-  const relatedProducts = productsData?.filter(([id, p]) => id.toString() !== productId && p.isDisplay !== false).slice(0, 4) || [];
+  const product = productsData?.find(([id, p]) => p.key === productKey || id.toString() === productKey)?.[1];
+  const relatedProducts = productsData?.filter(([id, p]) => (p.key !== productKey && id.toString() !== productKey) && p.isDisplay !== false).slice(0, 4) || [];
 
   useEffect(() => {
     if (product && product.isDisplay === false) {

@@ -35,6 +35,7 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
       
       return {
         id: p.id,
+        key: p.key || p.id.toString(),
         name: p.name || 'Không tên',
         type: p.categories && p.categories.length > 0 ? p.categories[0].name : 'Rượu Vang',
         description: p.description || '',
@@ -47,8 +48,8 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
     console.error('Error loading products:', error);
   }
 
-  const handleOrderClick = (id: bigint) => {
-    navigate({ to: `/ruou-vang/${encodeURIComponent(id.toString())}` });
+  const handleOrderClick = (key: string) => {
+    navigate({ to: `/ruou-vang/${encodeURIComponent(key)}` });
   };
 
   return (
@@ -101,7 +102,7 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
                     >
                       <div 
                         className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-muted/50 to-muted cursor-pointer"
-                        onClick={() => handleOrderClick(wine.id)}
+                        onClick={() => handleOrderClick(wine.key)}
                       >
                         <img
                           src={wine.image}
@@ -129,7 +130,7 @@ const Products = ({ products = [], isLoading = false, isError = false, error }: 
                           </div>
                         )}
                         <Button
-                          onClick={() => handleOrderClick(wine.id)}
+                          onClick={() => handleOrderClick(wine.key)}
                           className="w-full"
                         >
                           <ShoppingCart className="mr-2 h-4 w-4" />

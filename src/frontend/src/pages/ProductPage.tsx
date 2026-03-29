@@ -223,7 +223,7 @@ export default function ProductPage() {
                           )}
                           <Button
                             className="w-full"
-                            onClick={() => navigate({ to: `/ruou-vang/${encodeURIComponent(product.id.toString())}` })}
+                            onClick={() => navigate({ to: `/ruou-vang/${encodeURIComponent(product.key || product.id.toString())}` })}
                           >
                             <ShoppingBag className="mr-2 h-4 w-4" />
                             Đặt hàng
