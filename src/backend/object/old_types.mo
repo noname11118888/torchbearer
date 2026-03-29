@@ -49,7 +49,8 @@ module {
     id : Nat;
     name : Text;
     description : Text;
-    imageUrl : Text;
+    // imageUrl : Text;
+    imageUrl : [Text]; // max 5 items
     price : Nat;
     categories : [Category];
     tasting : [TastingNote];
@@ -58,6 +59,8 @@ module {
     info : [ProductInfo];
     isHighlighted : Bool;
     classificationTag : ProductInfo;
+    key : Text; // use for SEO path
+    isDisplay : Bool;
   };
 
   public type CartItem = {
@@ -66,7 +69,7 @@ module {
   };
 
   public type OrderItem = {
-    product : Product;
+    productId : Nat;
     quantity : Nat;
     totalPrice : Nat;
   };

@@ -32,6 +32,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Product = IDL.Record({
     'id' : IDL.Nat,
+    'key' : IDL.Text,
     'categories' : IDL.Vec(Category),
     'tasting' : IDL.Vec(TastingNote),
     'info' : IDL.Vec(ProductInfo),
@@ -39,7 +40,8 @@ export const idlFactory = ({ IDL }) => {
     'classificationTag' : ProductInfo,
     'description' : IDL.Text,
     'isHighlighted' : IDL.Bool,
-    'imageUrl' : IDL.Text,
+    'imageUrl' : IDL.Vec(IDL.Text),
+    'isDisplay' : IDL.Bool,
     'price' : IDL.Nat,
     'paring' : IDL.Vec(PairingFood),
     'profile' : IDL.Vec(FlavorProfile),
@@ -124,9 +126,9 @@ export const idlFactory = ({ IDL }) => {
     'completed' : IDL.Null,
   });
   const OrderItem = IDL.Record({
+    'productId' : IDL.Nat,
     'quantity' : IDL.Nat,
     'totalPrice' : IDL.Nat,
-    'product' : Product,
   });
   const Order = IDL.Record({
     'id' : IDL.Nat,
@@ -209,7 +211,7 @@ export const idlFactory = ({ IDL }) => {
     'getMediaPage' : IDL.Func([IDL.Nat], [IDL.Vec(MediaItem)], ['query']),
     'getOrderById' : IDL.Func([IDL.Nat], [IDL.Opt(Order)], ['query']),
     'getOrders' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
-    'getProductByName' : IDL.Func([IDL.Text], [IDL.Opt(Product)], ['query']),
+    'getProductByKey' : IDL.Func([IDL.Text], [IDL.Opt(Product)], ['query']),
     'getProductPriceVisibility' : IDL.Func([], [IDL.Bool], ['query']),
     'getProducts' : IDL.Func(
         [],

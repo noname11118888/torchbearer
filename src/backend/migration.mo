@@ -38,10 +38,26 @@ module {
       // products = old.products; // Assuming no changes needed
       products = Map.map<Nat, Old.Product, New.Product>(old.products, func (k : Nat, x1 : Old.Product) : New.Product {
         x1
+        // {
+        //   x1 with 
+        //   imageUrl = [x1.imageUrl];
+        //   isDisplay = true;
+        //   key = Nat.toText(x1.id);
+        // }
       });
       // orders = old.orders; // Assuming no changes needed
       orders = Map.map<Nat, Old.Order, New.Order>(old.orders, func (k : Nat, x1 : Old.Order) : New.Order {
         x1
+        // {
+        //   x1 with
+        //   items = Array.map<Old.OrderItem, New.OrderItem>(x1.items, func (x : Old.OrderItem) : New.OrderItem {
+        //     {
+        //       productId = x.product.id;
+        //       quantity = x.quantity;
+        //       totalPrice = x.totalPrice;
+        //     }
+        //   });
+        // }
       });
       // customerMessages = old.customerMessages; // Assuming no changes needed
       customerMessages = Map.map<Nat, Old.CustomerMessage, New.CustomerMessage>(old.customerMessages, func (k : Nat, x1 : Old.CustomerMessage) : New.CustomerMessage {

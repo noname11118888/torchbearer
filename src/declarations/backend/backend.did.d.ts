@@ -85,9 +85,9 @@ export interface Order {
   'customerEmail' : string,
 }
 export interface OrderItem {
+  'productId' : bigint,
   'quantity' : bigint,
   'totalPrice' : bigint,
-  'product' : Product,
 }
 export type OrderStatus = { 'cancelled' : null } |
   { 'pending' : null } |
@@ -99,6 +99,7 @@ export interface PairingFood {
 }
 export interface Product {
   'id' : bigint,
+  'key' : string,
   'categories' : Array<Category>,
   'tasting' : Array<TastingNote>,
   'info' : Array<ProductInfo>,
@@ -106,7 +107,8 @@ export interface Product {
   'classificationTag' : ProductInfo,
   'description' : string,
   'isHighlighted' : boolean,
-  'imageUrl' : string,
+  'imageUrl' : Array<string>,
+  'isDisplay' : boolean,
   'price' : bigint,
   'paring' : Array<PairingFood>,
   'profile' : Array<FlavorProfile>,
@@ -187,7 +189,7 @@ export interface _SERVICE {
   'getMediaPage' : ActorMethod<[bigint], Array<MediaItem>>,
   'getOrderById' : ActorMethod<[bigint], [] | [Order]>,
   'getOrders' : ActorMethod<[bigint], Array<Order>>,
-  'getProductByName' : ActorMethod<[string], [] | [Product]>,
+  'getProductByKey' : ActorMethod<[string], [] | [Product]>,
   'getProductPriceVisibility' : ActorMethod<[], boolean>,
   'getProducts' : ActorMethod<[], Array<[bigint, Product]>>,
   'getProductsByCategory' : ActorMethod<[string], Array<Product>>,

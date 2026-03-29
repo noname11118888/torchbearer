@@ -51,9 +51,11 @@ type Product =
    classificationTag: ProductInfo;
    description: text;
    id: nat;
-   imageUrl: text;
+   imageUrl: vec text;
    info: vec ProductInfo;
+   isDisplay: bool;
    isHighlighted: bool;
+   key: text;
    name: text;
    paring: vec PairingFood;
    price: nat;
@@ -74,7 +76,7 @@ type OrderStatus =
  };
 type OrderItem = 
  record {
-   product: Product;
+   productId: nat;
    quantity: nat;
    totalPrice: nat;
  };
@@ -237,7 +239,7 @@ service : {
   getMediaPage: (page: nat) -> (vec MediaItem) query;
   getOrderById: (id: nat) -> (opt Order) query;
   getOrders: (page: nat) -> (vec Order) query;
-  getProductByName: (name: text) -> (opt Product) query;
+  getProductByKey: (key: text) -> (opt Product) query;
   getProductPriceVisibility: () -> (bool) query;
   getProducts: () -> (vec record {
                             nat;

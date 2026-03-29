@@ -373,7 +373,7 @@ persistent actor {
     let orderItems = Array.map(items, 
       func(cartItem) {
         {
-          product = cartItem.product;
+          productId = cartItem.product.id;
           quantity = cartItem.quantity;
           totalPrice = cartItem.product.price * cartItem.quantity;
         };
@@ -529,10 +529,10 @@ persistent actor {
     productManager.getAll();
   };
 
-  public query func getProductByName(name : Text) : async ?T.Product {
+  public query func getProductByKey(key : Text) : async ?T.Product {
     let r = productManager.filter(
       func(_name, product) {
-        Text.equal(product.name, name);
+        Text.equal(product.key, key);
       }
     );
     if (r.size() == 0) {
