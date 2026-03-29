@@ -44,7 +44,7 @@ export default function ProductsEditor() {
   const [formData, setFormData] = useState<Product>({
     name: '',
     description: '',
-    imageUrl: '',
+    imageUrl: [],
     price: 0n,
     categories: [],
     id: 0n, // Backend will likely assign this
@@ -54,6 +54,8 @@ export default function ProductsEditor() {
     info: [], // Initialize with empty array
     isHighlighted: false, // Initialize with false
     classificationTag: { name: '', value: '' }, // Initialize with default values
+    isDisplay: true,
+    key: '',
   });
 
   // Extract products from [bigint, Product][] format
@@ -62,7 +64,12 @@ export default function ProductsEditor() {
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
-    setFormData(product);
+    setFormData({
+      ...product,
+      imageUrl: Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl],
+      isDisplay: product.isDisplay ?? true,
+      key: product.key || '',
+    });
     setIsAdding(false);
   };
 
@@ -72,7 +79,7 @@ export default function ProductsEditor() {
     setFormData({
       name: '',
       description: '',
-      imageUrl: '',
+      imageUrl: [],
       price: 0n,
       categories: [],
       id: 0n,
@@ -82,6 +89,8 @@ export default function ProductsEditor() {
       info: [], // Initialize with empty array
       isHighlighted: false, // Initialize with false
       classificationTag: { name: '', value: '' }, // Initialize with default values
+      isDisplay: true,
+      key: '',
     });
   };
 
@@ -91,7 +100,7 @@ export default function ProductsEditor() {
     setFormData({
       name: '',
       description: '',
-      imageUrl: '',
+      imageUrl: [],
       price: 0n,
       categories: [],
       id: 0n,
@@ -101,6 +110,8 @@ export default function ProductsEditor() {
       info: [],
       isHighlighted: false,
       classificationTag: { name: '', value: '' },
+      isDisplay: true,
+      key: '',
     });
   };
 
@@ -122,17 +133,29 @@ export default function ProductsEditor() {
       return;
     }
 
+    if (!formData.key.trim()) {
+      toast.error('Vui lòng nhập key cho sản phẩm (SEO)');
+      return;
+    }
+
     if (!formData.description.trim()) {
       toast.error('Vui lòng nhập mô tả sản phẩm');
       return;
     }
 
+    const filteredImages = formData.imageUrl.filter(url => url.trim() !== '');
+
+    const productToSave = {
+      ...formData,
+      imageUrl: filteredImages
+    };
+
     try {
       if (isAdding) {
-        await addProduct.mutateAsync(formData);
+        await addProduct.mutateAsync(productToSave);
         toast.success('Đã thêm sản phẩm thành công');
       } else if (editingProduct) {
-        await updateProduct.mutateAsync(formData);
+        await updateProduct.mutateAsync(productToSave);
         toast.success('Đã cập nhật sản phẩm thành công');
       }
       handleCancel();
@@ -168,6 +191,15 @@ export default function ProductsEditor() {
     if (url.startsWith('/')) return url;
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
     return `/assets/${url}`;
+  };
+
+  const handleUpdateProduct = async (productToUpdate: Product) => {
+    try {
+      await updateProduct.mutateAsync(productToUpdate);
+      toast.success('Đã cập nhật sản phẩm thành công');
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi cập nhật sản phẩm');
+    }
   };
 
   if (isLoading) {
@@ -207,6 +239,27 @@ export default function ProductsEditor() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2 border rounded-md p-2 h-10 w-full">
+                    <Checkbox
+                      id="isHighlighted"
+                      checked={formData.isHighlighted}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isHighlighted: checked as boolean })}
+                    />
+                    <Label htmlFor="isHighlighted" className="text-sm font-semibold text-yellow-600 dark:text-yellow-500">
+                      Sản phẩm nổi bật (Trang chủ)
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 border rounded-md p-2 h-10 w-full">
+                    <Checkbox
+                      id="isDisplay"
+                      checked={formData.isDisplay}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isDisplay: checked as boolean })}
+                    />
+                    <Label htmlFor="isDisplay">Hiển thị sản phẩm (Public)</Label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Tên sản phẩm *</Label>
                     <Input
@@ -214,14 +267,22 @@ export default function ProductsEditor() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Ví dụ: Rượu Vang Hảo Hạng"
-                      disabled={!isAdding}
                     />
-                    {!isAdding && (
-                      <p className="text-xs text-foreground/60">
-                        Tên sản phẩm không thể thay đổi sau khi tạo
-                      </p>
-                    )}
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="key">Đường dẫn sản phẩm (Key SEO) *</Label>
+                    <Input
+                      id="key"
+                      value={formData.key}
+                      onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+                      placeholder="ví dụ: ruou-vang-hao-hang"
+                    />
+                    <p className="text-xs text-foreground/60">
+                      Dùng cho URL sản phẩm: /product/ruou-vang-hao-hang
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price">Giá (VNĐ) *</Label>
                     <Input
@@ -233,6 +294,7 @@ export default function ProductsEditor() {
                     />
                   </div>
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="description">Mô tả *</Label>
                   <Textarea
@@ -243,39 +305,58 @@ export default function ProductsEditor() {
                     rows={3}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="imageUrl">URL hình ảnh</Label>
-                  <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    placeholder="wine-bottles-premium.dim_800x600.jpg"
-                  />
+                <div className="space-y-4 border rounded-md p-4">
+                  <Label>Hình ảnh sản phẩm (Tối đa 5 hình)</Label>
+                  {formData.imageUrl.map((url, index) => (
+                    <div key={index} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1">
+                        <Input
+                          value={url}
+                          onChange={(e) => {
+                            const newImages = [...formData.imageUrl];
+                            newImages[index] = e.target.value;
+                            setFormData({ ...formData, imageUrl: newImages });
+                          }}
+                          placeholder={`URL hình ảnh ${index + 1}`}
+                        />
+                        {url && (
+                          <div className="mt-1">
+                            <img
+                              src={getImagePreviewUrl(url)}
+                              alt={`Preview ${index + 1}`}
+                              className="h-20 w-auto rounded border object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          const newImages = formData.imageUrl.filter((_, i) => i !== index);
+                          setFormData({ ...formData, imageUrl: newImages });
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  {formData.imageUrl.length < 5 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFormData({ ...formData, imageUrl: [...formData.imageUrl, ''] })}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm hình ảnh
+                    </Button>
+                  )}
                   <p className="text-xs text-foreground/60">
                     Nhập tên file từ assets (ví dụ: wine-bottles-premium.dim_800x600.jpg) hoặc URL đầy đủ
                   </p>
-                  {formData.imageUrl && (
-                    <div className="mt-2">
-                      <img
-                        src={getImagePreviewUrl(formData.imageUrl)}
-                        alt="Preview"
-                        className="h-32 w-auto rounded border object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Highlight Product Checkbox */}
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isHighlighted"
-                    checked={formData.isHighlighted}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isHighlighted: checked as boolean })}
-                  />
-                  <Label htmlFor="isHighlighted">Hiển thị trên trang chủ (Sản phẩm nổi bật)</Label>
                 </div>
 
                 {/* Classification Tag Fields */}
@@ -569,9 +650,9 @@ export default function ProductsEditor() {
                 <Card key={Number(product.id)}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
-                      {product.imageUrl && (
+                      {product.imageUrl && product.imageUrl.length > 0 && (
                         <img
-                          src={getImagePreviewUrl(product.imageUrl)}
+                          src={getImagePreviewUrl(product.imageUrl[0])}
                           alt={product.name}
                           className="h-24 w-24 rounded object-cover flex-shrink-0"
                           onError={(e) => {
@@ -580,7 +661,16 @@ export default function ProductsEditor() {
                         />
                       )}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg">{product.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-lg">{product.name}</h3>
+                          {!product.isDisplay && (
+                            <Badge variant="destructive" className="text-[10px] px-1 h-4">Ẩn</Badge>
+                          )}
+                          {product.isHighlighted && (
+                            <Badge variant="default" className="bg-yellow-600 text-[10px] px-1 h-4">Nổi bật</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-foreground/50 font-mono">Key: {product.key}</p>
                         <p className="text-foreground/70 text-sm mt-1 line-clamp-2">{product.description}</p>
                         <p className="text-primary font-medium mt-2">
                           {Number(product.price).toLocaleString('vi-VN')} VNĐ
@@ -615,15 +705,26 @@ export default function ProductsEditor() {
                           </div>
                         )}
                       </div>
-                      <div className="flex gap-2 flex-shrink-0">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEdit(product)}
-                          disabled={isAdding || editingProduct !== null || deleteProduct.isPending}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2 flex-shrink-0">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              const updatedProduct = { ...product, isDisplay: !product.isDisplay };
+                              handleUpdateProduct(updatedProduct);
+                            }}
+                            title={product.isDisplay ? "Ẩn sản phẩm" : "Hiện sản phẩm"}
+                          >
+                            {product.isDisplay ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(product)}
+                            disabled={isAdding || editingProduct !== null || deleteProduct.isPending}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
                         <Button
                           variant="outline"
                           size="sm"
