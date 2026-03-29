@@ -697,12 +697,14 @@ export default function OrderPage() {
                     const relatedImageUrl = firstImg.startsWith('http')
                       ? firstImg
                       : `/assets/${firstImg}`;
+
+                    const relatedPathKey = relatedProduct.key || id.toString();
                     
                     return (
                       <CarouselItem key={id.toString()} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                         <Card 
                           className="cursor-pointer hover:shadow-xl transition-shadow"
-                          onClick={() => navigate({ to: `/ruou-vang/${encodeURIComponent(id.toString())}` })}
+                          onClick={() => navigate({ to: `/ruou-vang/${encodeURIComponent(relatedPathKey)}` })}
                         >
                           <div className="aspect-[3/4] overflow-hidden rounded-t-lg bg-gradient-to-br from-muted/50 to-muted">
                             <img
