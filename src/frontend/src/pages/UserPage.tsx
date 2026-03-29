@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetCallerUserProfile, useSaveCallerUserProfile, useGetCallerOrders } from '../hooks/useQueries';
+import { useGetCallerUserProfile, useSaveCallerUserProfile, useGetCallerOrders, useGetProducts } from '../hooks/useQueries';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,10 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Package, LogOut, Loader2 } from 'lucide-react';
+import { User, Package, LogOut, Loader2, Eye, Calendar, Clock, CreditCard } from 'lucide-react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import type { Order, Product } from '@/backend';
 
 export default function UserPage() {
   const { identity, login, logout } = useInternetIdentity();
@@ -19,17 +21,32 @@ export default function UserPage() {
   
   const [currentPage, setCurrentPage] = useState(1);
   const { data: ordersData, isLoading: ordersLoading } = useGetCallerOrders(currentPage - 1);
+  const { data: productsData } = useGetProducts();
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
-  // Sync state with profile data when loaded
-  useState(() => {
-    if (profile) {
-      setName(profile.name);
-      setEmail(profile.email);
-    }
+  // Map products for easy lookup
+  const productMap = new Map<bigint, Product>();
+  productsData?.forEach(([id, product]) => {
+    productMap.set(id, product);
   });
+
+  const getProductInfo = (productId: bigint) => {
+    return productMap.get(productId);
+  };
+
+  const formatDate = (timestamp: bigint) => {
+    return new Date(Number(timestamp) / 1000000).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,7 +192,7 @@ export default function UserPage() {
                                 <td className="p-3 font-medium">#{order.id.toString()}</td>
                                 <td className="p-3">{new Date(Number(order.timestamp) / 1000000).toLocaleDateString('vi-VN')}</td>
                                 <td className="p-3">{Number(order.totalAmount).toLocaleString('vi-VN')} VNĐ</td>
-                                <td className="p-3">
+                                <td className="p-3 flex items-center justify-between">
                                   <Badge variant={
                                     'pending' in order.status ? 'outline' : 
                                     'completed' in order.status ? 'default' : 'destructive'
@@ -183,6 +200,16 @@ export default function UserPage() {
                                     {'pending' in order.status ? 'Đang chờ' : 
                                      'completed' in order.status ? 'Hoàn thành' : 'Đã hủy'}
                                   </Badge>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={() => {
+                                      setSelectedOrder(order);
+                                      setViewDialogOpen(true);
+                                    }}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
                                 </td>
                               </tr>
                             ))}
@@ -220,6 +247,92 @@ export default function UserPage() {
           </Tabs>
         </div>
       </main>
+
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Chi tiết đơn hàng #{selectedOrder?.id.toString()}</DialogTitle>
+            <DialogDescription>
+              Thông tin chi tiết về các sản phẩm bạn đã đặt.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedOrder && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4 py-4 border-y">
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Ngày đặt:</span>
+                  <span className="text-muted-foreground">{formatDate(selectedOrder.timestamp)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Tổng tiền:</span>
+                  <span className="text-primary font-bold">{Number(selectedOrder.totalAmount).toLocaleString('vi-VN')} VNĐ</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  Sản phẩm đã đặt
+                </h4>
+                <div className="space-y-3">
+                  {selectedOrder.items.map((item, idx) => {
+                    const product = getProductInfo(item.productId);
+                    return (
+                      <div key={idx} className="flex gap-4 items-center p-3 rounded-lg bg-muted/30 border border-border/50">
+                        {product?.imageUrl?.[0] ? (
+                          <img 
+                            src={product.imageUrl[0].startsWith('http') ? product.imageUrl[0] : `/assets/${product.imageUrl[0]}`} 
+                            alt={product.name}
+                            className="w-12 h-12 rounded object-cover bg-white"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded bg-muted flex items-center justify-center">
+                            <Package className="h-6 w-6 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{product?.name || `Sản phẩm #${item.productId.toString()}`}</p>
+                          <p className="text-xs text-muted-foreground">Số lượng: {item.quantity.toString()}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-sm">{Number(item.totalPrice).toLocaleString('vi-VN')} VNĐ</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {selectedOrder.note && (
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm">Ghi chú của bạn:</h4>
+                  <div className="p-3 rounded-md bg-muted text-sm italic">
+                    "{selectedOrder.note}"
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center pt-4 border-t">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Trạng thái:</span>
+                  <Badge variant={
+                    'pending' in selectedOrder.status ? 'outline' : 
+                    'completed' in selectedOrder.status ? 'default' : 'destructive'
+                  }>
+                    {'pending' in selectedOrder.status ? 'Đang chờ xử lý' : 
+                     'completed' in selectedOrder.status ? 'Đã hoàn thành' : 'Đã hủy'}
+                  </Badge>
+                </div>
+                <Button variant="outline" onClick={() => setViewDialogOpen(false)}>Đóng</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       <Footer />
     </>
   );

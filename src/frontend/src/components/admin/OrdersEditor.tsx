@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { useGetOrders, useGetTotalOrderCount, useDeleteOrder, useUpdateOrder } from '../../hooks/useQueries';
+import { useGetOrders, useGetTotalOrderCount, useDeleteOrder, useUpdateOrder, useGetProducts } from '../../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
-import type { Order } from '../../../../declarations/backend/backend.did';
+import type { Order, Product } from '../../../../declarations/backend/backend.did';
 
 export default function OrdersEditor() {
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const { data: ordersData, isLoading } = useGetOrders(currentPage);
   const { data: totalCount } = useGetTotalOrderCount();
+  const { data: productsData } = useGetProducts();
   const deleteOrderMutation = useDeleteOrder();
   const updateOrderMutation = useUpdateOrder();
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -23,6 +24,16 @@ export default function OrdersEditor() {
   const orders = ordersData || [];
   const total = totalCount ? Number(totalCount) : 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  // Map products for easy lookup by ID
+  const productMap = new Map<bigint, Product>();
+  productsData?.forEach(([id, product]) => {
+    productMap.set(id, product);
+  });
+
+  const getProductName = (productId: bigint) => {
+    return productMap.get(productId)?.name || `Sản phẩm #${productId.toString()}`;
+  };
 
   const handleView = (order: Order) => {
     setSelectedOrder(order);
@@ -127,7 +138,7 @@ export default function OrdersEditor() {
                         {order.items.length} sản phẩm
                         <div className="text-xs text-muted-foreground">
                           {order.items.slice(0, 3).map((it, idx) => (
-                            <span key={idx}>{it.product.name} x{it.quantity}{idx < Math.min(2, order.items.length-1) ? ', ' : ''}</span>
+                            <span key={idx}>{getProductName(it.productId)} x{it.quantity}{idx < Math.min(2, order.items.length-1) ? ', ' : ''}</span>
                           ))}
                           {order.items.length > 3 ? '...' : ''}
                         </div>
@@ -220,7 +231,7 @@ export default function OrdersEditor() {
                   <div className="mt-1 space-y-1">
                     {selectedOrder.items.map((it, idx) => (
                       <div key={idx} className="flex justify-between">
-                        <span>{it.product.name} x{it.quantity}</span>
+                        <span>{getProductName(it.productId)} x{it.quantity}</span>
                         <span className="text-muted-foreground">{Number(it.totalPrice).toLocaleString('vi-VN')}</span>
                       </div>
                     ))}
